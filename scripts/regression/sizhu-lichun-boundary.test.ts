@@ -17,6 +17,11 @@ let passed = 0;
 const ok = (name: string, cond: boolean) => { assert.ok(cond, `❌ ${name}`); console.log(`  ✅ ${name}`); passed++; };
 const sizhu = (y: number, mo: number, d: number, h: number) =>
   (generateChart({ year: y, month: mo, day: d, hour: h, gender: 'male' } as any) as any).lunarInfo;
+const sizhuAt = (y: number, mo: number, d: number, clockHour: number, clockMinute: number, hour: number) =>
+  generateChart({
+    year: y, month: mo, day: d, hour, gender: 'male',
+    origInput: { year: y, month: mo, day: d, clockHour, clockMinute },
+  }).lunarInfo;
 
 // ① 会员案例：2004-02-04 丑时(立春19:56前) → 节气年柱癸未、月柱乙丑
 const m = sizhu(2004, 2, 4, 1);
@@ -41,5 +46,15 @@ ok('非节气日 1990-06-15 午时 节气四柱稳定=庚午/壬午/辛亥/甲�
 // ⑤ 日柱、时柱不受立春影响（会员案例日柱癸丑、时柱癸丑）
 ok('日柱不受立春边界影响（会员案例=癸丑）', m.fourPillars?.[2] === '癸丑');
 ok('时柱不受立春边界影响（会员案例丑时=癸丑）', m.fourPillars?.[3] === '癸丑');
+
+// ⑥ 有原始時分時，直接依出生分鐘跨越節氣切換；不再以時辰中點猜測。
+const beforeTerm = sizhuAt(2004, 2, 4, 19, 55, 10);
+const nearTerm = sizhuAt(2004, 2, 4, 19, 56, 10);
+const afterTerm = sizhuAt(2004, 2, 4, 19, 57, 10);
+ok('精確分鐘：立春 19:55 年/月柱仍為癸未/乙丑', beforeTerm.fourPillars?.[0] === '癸未' && beforeTerm.fourPillars?.[1] === '乙丑');
+ok('精確分鐘：立春 19:57 年/月柱已切換甲申/丙寅', afterTerm.fourPillars?.[0] === '甲申' && afterTerm.fourPillars?.[1] === '丙寅');
+ok('出生分鐘位於交節附近時顯示警示', nearTerm.solarTermBoundaryWarning === true);
+ok('原始出生時分被標記為精確分鐘來源', nearTerm.solarTermPrecision === 'exact-minute');
+ok('離交節較遠的分鐘不誤報警示', sizhuAt(2004, 2, 4, 19, 50, 10).solarTermBoundaryWarning === false);
 
 console.log(`\n[sizhu-lichun-boundary] ${passed} 项断言全部通过`);

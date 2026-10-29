@@ -70,11 +70,11 @@ npm run typecheck    # TypeScript check
 npm test             # charting regression tests
 ```
 
-**No API key is needed for charting.** The open-source version contains **no backend routes**: AI interpretation (`/api/interpret`) and compatibility analysis (`/api/heming`) return 404 until you implement them yourself.
+**No API key is needed for charting.** The server-side `/api/interpret` route supports ModelScope, Zhipu, and Gemini; this project currently uses the tested ModelScope `Qwen/Qwen3.5-35B-A3B` model (`AI_PROVIDER=modelscope`) through `https://api-inference.modelscope.cn/v1/`. Keep `MODELSCOPE_API_KEY` server-side only. The route sends only a minimized chart summary and conversation to the configured provider, excluding name, exact Gregorian birth date, and birthplace. Zhipu API keys for personal, team, and standard model API products are not interchangeable; use a standard model API key. Compatibility analysis (`/api/heming`) is not included.
 
 ## What is not included
 
-The interpretation database (`lib/ziwei/db-analysis.ts` is a placeholder), AI prompts, all `/api/*` backend routes, user accounts, payments, and deployment configuration.
+The interpretation database (`lib/ziwei/db-analysis.ts` is a placeholder), commercial interpretation prompts, compatibility APIs, user accounts, payments, and deployment configuration.
 
 ## Interpretation dataset v4.0 (674,976 charts × 13 topics, 2026-10-15)
 

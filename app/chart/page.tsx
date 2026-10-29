@@ -33,6 +33,26 @@ export default function ChartPage() {
           <br />
           （本页为引擎 Demo，完整商业版界面不在开源范围；排盘内核完全开放。）
         </p>
+        <div style={{ marginTop: -12, marginBottom: 22 }}>
+          <button
+            type="button"
+            onClick={() => setChart(generateChart({ year: 1990, month: 1, day: 1, hour: 4, gender: 'male' }))}
+            style={{
+              padding: '10px 16px',
+              border: '1px solid rgba(200, 153, 58, 0.65)',
+              borderRadius: 10,
+              color: '#d4a843',
+              background: 'rgba(200, 153, 58, 0.08)',
+              cursor: 'pointer',
+              fontSize: 13,
+            }}
+          >
+            用示例资料快速查看完整命盘
+          </button>
+          <p style={{ color: '#888', fontSize: 12, margin: '8px 0 0' }}>
+            使用虚构示例：1990-01-01，辰时，男；姓名与出生地留空。
+          </p>
+        </div>
         <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} />
       </main>
     );
@@ -60,13 +80,7 @@ export default function ChartPage() {
         onYearChange={setLiunianYear}
       />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 380px)',
-          gap: 20, marginTop: 16, alignItems: 'start',
-        }}
-      >
+      <div className="chart-result-layout">
         <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
         <InsightPanel chart={chart} selectedPalace={selectedPalace} />
       </div>

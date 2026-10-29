@@ -23,6 +23,30 @@ export interface BirthInfo {
   };
 }
 
+export type TenGod = '比肩' | '劫財' | '食神' | '傷官' | '偏財' | '正財' | '七殺' | '正官' | '偏印' | '正印';
+export type WuXing = '木' | '火' | '土' | '金' | '水';
+
+export interface BaziPillarFact {
+  pillar: string;
+  stemTenGod: TenGod;
+  hiddenStems: Array<{ stem: string; element: WuXing; tenGod: TenGod; weight: number }>;
+}
+
+export interface BaziFacts {
+  dayMaster: string;
+  dayMasterElement: WuXing;
+  pillars: BaziPillarFact[];
+  fiveElementWeights: Record<WuXing, number>;
+  strength: {
+    score: number;
+    label: '偏強' | '中和' | '偏弱';
+    supportWeight: number;
+    drainWeight: number;
+    monthModifier: number;
+    method: string;
+  };
+}
+
 export interface LunarInfo {
   lunarYear: number;
   lunarMonth: number;    // positive = normal, negative = leap month
@@ -34,6 +58,12 @@ export interface LunarInfo {
   fourPillars?: [string, string, string, string];
   /** 非节气四柱（农历口径：正月初一换年 + 农历月，与紫微同历法）——节气交界日其月柱会与 fourPillars 不同 */
   fourPillarsLunar?: [string, string, string, string];
+  /** 由確定性規則計算，避免模型自行推導藏干與十神。 */
+  baziFacts?: BaziFacts;
+  /** Exact-minute uses original civil time; otherwise solar year/month use the shichen midpoint estimate. */
+  solarTermPrecision?: 'exact-minute' | 'hour-midpoint';
+  /** Birth minute is within about one minute of a detected year/month pillar transition. */
+  solarTermBoundaryWarning?: boolean;
 }
 
 export type SiHua = '禄' | '权' | '科' | '忌';

@@ -21,6 +21,13 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
   let y = parseInt(form.year) || 0;
   let m = parseInt(form.month) || 0;
   let d = parseInt(form.day) || 0;
+  const origInput = form.unknownTime ? undefined : {
+    year: y,
+    month: m,
+    day: d,
+    clockHour: parseInt(form.clockHour) || 0,
+    clockMinute: parseInt(form.clockMinute) || 0,
+  };
 
   // 晚子时（23:00-23:59）按次日处理：用 Date 对象自动处理月末/年末进位
   if (!form.unknownTime) {
@@ -44,6 +51,7 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
     province: form.province || undefined,
     city: form.city || undefined,
     longitude: form.province ? form.longitude : undefined,
+    origInput,
   };
 }
 

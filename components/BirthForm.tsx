@@ -145,7 +145,18 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     setTouched({ year: true, month: true, day: true });
     if (hasError) return;
     onFormSave?.({ ...form });
-    onSubmit({ year: y, month: m, day: d, hour: branch, gender: form.gender, name: form.name || undefined, province: form.province || undefined, city: form.city || undefined, longitude: form.province ? form.longitude : undefined });
+    onSubmit({
+      year: y, month: m, day: d, hour: branch, gender: form.gender,
+      name: form.name || undefined,
+      province: form.province || undefined,
+      city: form.city || undefined,
+      longitude: form.province ? form.longitude : undefined,
+      origInput: form.unknownTime ? undefined : {
+        year: y, month: m, day: d,
+        clockHour: parseInt(form.clockHour) || 0,
+        clockMinute: parseInt(form.clockMinute) || 0,
+      },
+    });
   };
 
   // ─── 样式变量 ────────────────────────────────────────────
@@ -203,7 +214,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   return (
     <motion.form
       onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: 20 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       style={{ background: bg, border: `1px solid ${border}`, borderRadius: '24px', padding: '28px', backdropFilter: 'blur(20px)' }}

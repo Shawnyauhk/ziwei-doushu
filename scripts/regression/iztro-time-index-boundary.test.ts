@@ -52,6 +52,11 @@ assert.deepEqual(
   { year: 2000, month: 2, day: 1, hour: 0 },
   '23:30 is the next calendar date and branch index 0',
 );
+assert.deepEqual(
+  lateZi.origInput,
+  { year: 2000, month: 1, day: 31, clockHour: 23, clockMinute: 30 },
+  'late zi adjustment must retain the original civil birth date and minute',
+);
 
 const earlyZi = formToBirthInfo(formAt('0'));
 assert.deepEqual(

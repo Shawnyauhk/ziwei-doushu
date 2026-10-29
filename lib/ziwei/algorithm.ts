@@ -6,6 +6,7 @@
 import { astro } from 'iztro';
 import { Solar, LunarMonth } from 'lunar-javascript';
 import type { BirthInfo, LunarInfo, Star, Palace, DaXian, DaXianSiHua, ZiweiChart } from './types';
+import { calculateBaziFacts } from './bazi';
 import { BRANCHES, STEMS } from './constants';
 import { schoolStarBrightness, type BrightnessSchool } from './school-data';
 import { SCHOOL_AX } from './school-tables.generated';
@@ -200,6 +201,7 @@ export function getLunarInfo(
   day: number,
   hour?: number,
   policy: LunarMonthPolicy = 'prev-month',
+  origInput?: BirthInfo['origInput'],
 ): LunarInfo {
   const solar = Solar.fromYmd(year, month, day);
   const lunar = solar.getLunar();
@@ -214,19 +216,43 @@ export function getLunarInfo(
   // ★ 节气四柱（年柱/月柱/日柱/时柱）+ 非节气四柱（农历口径月柱）
   let fourPillars: [string, string, string, string] | undefined;
   let fourPillarsLunar: [string, string, string, string] | undefined;
+  let solarTermPrecision: LunarInfo['solarTermPrecision'] = 'hour-midpoint';
+  let solarTermBoundaryWarning = false;
   try {
     // ★ 2026-09-01 立春/节气边界修正：节气四柱的年柱、月柱改用 getEightChar()（精确到立春/节的时刻）。
     //   原用 getYearGanByLiChun()/getMonthGan() 是「按立春当天整天」切换、不看时刻 —— 立春当天凌晨出生
     //   的会被算进新的一年，年/月柱各差一位（会员实测：2004-02-04 丑时应为癸未/乙丑，却排成甲申/丙寅）。
     //   立春=2004-02-04 19:56，此人凌晨 2:40 生，本该上一年癸未。lunar-javascript 的 getYearGanByLiChun
     //   即使传入时间也按日切换（实测无效），getEightChar 才精确到分。
-    //   时刻用「时辰中点」(index*2 点)近似，与排盘既有的真太阳时时辰同口径；日柱/时柱不受立春影响、保持原算法。
-    //   非节气日新旧完全一致（只有落在立春/十二节当天、交节时刻前后的人才会变），已抽样 12 例逐一比对验证。
-    const effHour = (hour !== undefined && hour >= 0 && hour <= 11) ? hour * 2 : 0;
+    // 已保存原始民用時分時，按精確分鐘判斷節氣；沒有可用輸入時才退回時辰中點。
+    const probe = origInput && Number.isInteger(origInput.year) && Number.isInteger(origInput.month) &&
+      Number.isInteger(origInput.day) && Number.isInteger(origInput.clockHour) &&
+      Number.isInteger(origInput.clockMinute) && origInput.clockHour >= 0 && origInput.clockHour <= 23 &&
+      origInput.clockMinute >= 0 && origInput.clockMinute <= 59
+      ? new Date(Date.UTC(origInput.year, origInput.month - 1, origInput.day))
+      : undefined;
+    const useExactInput = Boolean(probe && probe.getUTCFullYear() === origInput?.year &&
+      probe.getUTCMonth() === (origInput?.month ?? 0) - 1 && probe.getUTCDate() === origInput?.day);
+    const sourceYear = useExactInput ? origInput!.year : year;
+    const sourceMonth = useExactInput ? origInput!.month : month;
+    const sourceDay = useExactInput ? origInput!.day : day;
+    const sourceHour = useExactInput ? origInput!.clockHour : (hour !== undefined && hour >= 0 && hour <= 11 ? hour * 2 : 0);
+    const sourceMinute = useExactInput ? origInput!.clockMinute : 0;
+    solarTermPrecision = useExactInput ? 'exact-minute' : 'hour-midpoint';
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ec = (Solar as any).fromYmdHms(year, month, day, effHour, 0, 0).getLunar().getEightChar();
+    const ec = (Solar as any).fromYmdHms(sourceYear, sourceMonth, sourceDay, sourceHour, sourceMinute, 0).getLunar().getEightChar();
     const yearGZ = ec.getYear() as string;    // 节气四柱年柱：立春精确换年
     const monthGZ = ec.getMonth() as string;  // 节气四柱月柱：节气精确换月 + 五虎遁用立春校正后的年干
+    if (useExactInput) {
+      const center = Date.UTC(sourceYear, sourceMonth - 1, sourceDay, sourceHour, sourceMinute);
+      const yearMonthAt = (timestamp: number) => {
+        const time = new Date(timestamp);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const at = (Solar as any).fromYmdHms(time.getUTCFullYear(), time.getUTCMonth() + 1, time.getUTCDate(), time.getUTCHours(), time.getUTCMinutes(), 0).getLunar().getEightChar();
+        return `${at.getYear()}-${at.getMonth()}`;
+      };
+      solarTermBoundaryWarning = yearMonthAt(center - 60_000) !== yearMonthAt(center + 60_000);
+    }
     const dayGZ = `${lu.getDayGan()}${lu.getDayZhi()}`;
     // 时柱：日干 + 时支共同决定；时干由 day stem + hour 推
     // 规则：甲己日子时 → 甲子；乙庚日子时 → 丙子；丙辛 → 戊；丁壬 → 庚；戊癸 → 壬
@@ -258,6 +284,9 @@ export function getLunarInfo(
     isLeapMonth: effective.isLeapMonth,
     fourPillars,
     fourPillarsLunar,
+    baziFacts: fourPillars ? calculateBaziFacts(fourPillars) : undefined,
+    solarTermPrecision,
+    solarTermBoundaryWarning,
   };
 }
 
@@ -631,7 +660,7 @@ export function generateChart(
   );
 
   // ── 农历信息（含节气四柱）──
-  const lunarInfo = getLunarInfo(year, month, day, hour, leapMode);
+  const lunarInfo = getLunarInfo(year, month, day, hour, leapMode, birthInfo.origInput);
 
   // ★ 2026-08-14 金标准盘核对：截空/副截阴干对调 + 年支大耗 + 旬空成对副旬
   applySchoolJiekong(palaces, lunarInfo.yearStem);

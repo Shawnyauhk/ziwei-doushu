@@ -276,8 +276,10 @@ cd ziwei-doushu
 # 安装依赖
 npm install
 
-# 配置环境变量（只看排盘可以跳过；AI 配置仅在你自己实现了 /api/* 接口时才用得上）
+# 配置 AI 供應商（仅在使用 AI 解读时需要；排盘本身无需 API Key）
 cp .env.example .env.local
+# 当前使用 ModelScope Qwen/Qwen3.5-35B-A3B（api-inference.modelscope.cn）；Token 仅由服务器端读取，不要提交到 Git
+# 切换智谱或 Gemini 时设置 AI_PROVIDER=zhipu 或 gemini
 
 # 启动开发服务器
 npm run dev
@@ -292,7 +294,9 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 
 每次 push 与 PR 都会在 GitHub Actions 上跑同一套（见 [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)）。
 
-> **注意：开源版不含后端 API 路由。**排盘、命盘展示、合盘起盘都在浏览器里用本仓库的引擎完成，**不需要任何 API Key**。AI 解读（`/api/interpret`）和合盘 AI 分析（`/api/heming`）需要你自己实现接口；没实现之前，这两处会直接提示「开源版不含该接口」，配置 API Key 也不会变成可用（#30 就是这个原因）。
+> 排盘、命盘展示与合盘起盘在浏览器端完成，不需要 API Key。AI 解读路由 `/api/interpret` 支持 Gemini、ModelScope 与智谱开放平台，当前默认使用已通过实际调用测试的智谱 `glm-4.7-flash`（`AI_PROVIDER=zhipu`）；各服务 Key 只由服务器读取。解读只向当前配置的服务商发送匿名化命盘摘要和对话，不包含姓名、精确公历生日或出生地。智谱需设置 `ZHIPU_API_KEY`，ModelScope 需设置 `AI_PROVIDER=modelscope`、`MODELSCOPE_API_KEY` 与可选的 `MODELSCOPE_MODEL`。智谱个人套餐、团队套餐、模型标准 API 的 Key 互不通用，需使用标准模型 API Key。合盘 AI 分析（`/api/heming`）仍未提供。
+
+参考：[Google Gemini `generateContent` / `streamGenerateContent` REST 文档](https://ai.google.dev/api/generate-content)；[ModelScope API-Inference 文档](https://www.modelscope.ai/docs/model-service/API-Inference/intro)；[智谱 GLM-4.7-Flash 文档](https://docs.bigmodel.cn/cn/guide/models/free/glm-4.7-flash)；[智谱 API 快速开始](https://docs.bigmodel.cn/cn/guide/start/quick-start)。ModelScope API-Inference 有动态配额与并发限制，官方说明其适合体验和开发测试，不提供高并发或 SLA 保证；正式使用前请核对账号绑定、实名及服务条款。
 
 ---
 
@@ -381,9 +385,9 @@ npm test            # 排盘引擎回归（768 盘 × 紫微铁律、夏令时�
 | | 内容 |
 |---|---|
 | ✅ **开源** | 排盘引擎（`lib/ziwei/`）、古籍公版原文（`lib/classics/`）、SEO 知识图谱（`lib/seo/`）、Demo 界面、51.8 万样本数据集、13 维解读数据集 v4.0 |
-| ❌ **不开源** | 断语库（`lib/ziwei/db-analysis.ts` 是占位，线上是上万行的 13 主题断语）、AI 解读 prompt、后端 API（`/api/interpret` 等）、用户系统（登录 / 会员 / 支付）、服务端安全（签名、防刷、水印）、部署配置 |
+| ❌ **不开源** | 断语库（`lib/ziwei/db-analysis.ts` 是占位，线上是上万行的 13 主题断语）、商业版 AI 解读 prompt、合盘 API（`/api/heming`）、用户系统（登录 / 会员 / 支付）、服务端安全（签名、防刷、水印）、部署配置 |
 
-如果你需要 AI 解读能力，可以参考 `lib/ziwei/patterns.ts` 和 `heming-knowledge.ts` 里的知识库，结合任意 LLM 自行构建 prompt。
+基础 Gemini 命盘解读接口见 `app/api/interpret/route.ts`；更完整的解读知识库与商业版 prompt 不在开源范围内。
 
 ---
 

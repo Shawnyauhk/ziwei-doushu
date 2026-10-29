@@ -1,125 +1,59 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import ScrollIntro from '@/components/ScrollIntro';
+
+const linkStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 48,
+  padding: '0 24px',
+  borderRadius: 10,
+  fontSize: 15,
+  fontWeight: 600,
+  textDecoration: 'none',
+};
 
 export default function PreviewPage() {
-  const router = useRouter();
-  // replayKey 用于强制重置 ScrollIntro（用户点"再播放一次"时）
-  const [replayKey, setReplayKey] = useState(0);
-  const [done, setDone] = useState(false);
-
   return (
-    <>
-      {/* 卷轴开场动画 */}
-      <ScrollIntro key={replayKey} onComplete={() => setDone(true)} />
-
-      {/* 动画结束后的「样片说明 + 操作按钮」面板 */}
-      {done && (
-        <main style={{
-          minHeight: '100vh',
-          background: '#0d0a08',
-          color: '#e8dcc4',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: '48px 24px',
-          fontFamily: '"STSong", "Songti SC", serif',
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 24,
+        background: '#080d18',
+        color: '#f3ead6',
+        fontFamily: 'system-ui, sans-serif',
+      }}
+    >
+      <section
+        style={{
+          width: 'min(100%, 560px)',
+          padding: 'clamp(28px, 7vw, 56px)',
+          border: '1px solid rgba(201, 153, 58, 0.28)',
+          borderRadius: 20,
+          background: 'linear-gradient(145deg, #101a2b, #0b1220)',
+          boxShadow: '0 24px 80px rgba(0, 0, 0, 0.3)',
           textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.4em', color: '#c89647', marginBottom: '16px' }}>
-            SCROLL · INTRO · PREVIEW
-          </div>
-          <h1 style={{
-            fontSize: 'clamp(28px, 3.5vw, 40px)',
-            letterSpacing: '0.18em',
-            color: '#e8dcc4',
-            marginBottom: '16px',
-            fontWeight: 600,
-          }}>
-            紫微卷轴 · 开场预览
-          </h1>
-          <p style={{
-            fontSize: '14px', color: '#a89878',
-            maxWidth: '500px', lineHeight: 1.9,
-            letterSpacing: '0.1em',
-            marginBottom: '40px',
-            fontFamily: '"STKaiti", "Kaiti SC", serif',
-          }}>
-            刚才看到的卷轴效果会在每次进入主页时缓缓铺开。<br />
-            如果满意，告诉我，我把它接到主页 / 上线。
-          </p>
-
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '24px' }}>
-            <button
-              onClick={() => { setDone(false); setReplayKey(k => k + 1); }}
-              style={{
-                background: '#a8302a',
-                color: '#f5ecd7',
-                padding: '14px 28px',
-                fontSize: '14px',
-                fontFamily: '"STSong", serif',
-                letterSpacing: '0.3em',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: 600,
-              }}
-            >
-              再 播 放 一 次
-            </button>
-            <button
-              onClick={() => router.push('/')}
-              style={{
-                background: 'transparent',
-                color: '#e8dcc4',
-                padding: '14px 28px',
-                fontSize: '14px',
-                fontFamily: '"STSong", serif',
-                letterSpacing: '0.3em',
-                border: '1px solid rgba(232,220,196,0.25)',
-                cursor: 'pointer',
-              }}
-            >
-              进 入 原 版 首 页
-            </button>
-          </div>
-
-          <div style={{
-            marginTop: '40px', fontSize: '12px', color: '#6e6048',
-            letterSpacing: '0.15em',
-            display: 'flex', gap: '20px',
-          }}>
-            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>原版 ↗</Link>
-            <span>·</span>
-            <Link href="/chart" style={{ color: 'inherit', textDecoration: 'none' }}>命盘</Link>
-            <span>·</span>
-            <Link href="/heming" style={{ color: 'inherit', textDecoration: 'none' }}>合盘</Link>
-          </div>
-
-          {/* 时间轴说明 */}
-          <div style={{
-            marginTop: '64px',
-            padding: '24px 32px',
-            border: '1px solid rgba(232,220,196,0.12)',
-            maxWidth: '500px',
-            fontSize: '12px',
-            color: '#a89878',
-            lineHeight: 1.9,
-            letterSpacing: '0.1em',
-            fontFamily: '"STKaiti", serif',
-            textAlign: 'left',
-          }}>
-            <div style={{ color: '#c89647', marginBottom: '12px', letterSpacing: '0.2em', fontSize: '11px' }}>动画时间轴</div>
-            <div>· 0.0 ~ 1.7 s &nbsp;&nbsp;卷轴从中央向两侧展开</div>
-            <div>· 1.9 ~ 2.7 s &nbsp;&nbsp;宣纸内容浮现（标题 + 副标 + 朱砂印）</div>
-            <div>· 2.7 ~ 3.5 s &nbsp;&nbsp;停留欣赏</div>
-            <div>· 3.5 ~ 4.2 s &nbsp;&nbsp;整体淡出，进入主页</div>
-            <div style={{ marginTop: '12px', color: '#6e6048', fontSize: '11px' }}>
-              用户随时可点右下「跳过」直接进入主页。
-            </div>
-          </div>
-        </main>
-      )}
-    </>
+        }}
+      >
+        <p style={{ margin: '0 0 14px', color: '#c8993a', fontSize: 12, letterSpacing: '0.28em' }}>
+          PREVIEW
+        </p>
+        <h1 style={{ margin: 0, fontSize: 'clamp(28px, 6vw, 40px)', letterSpacing: '0.12em' }}>
+          紫微命盤
+        </h1>
+        <p style={{ margin: '16px 0 30px', color: '#aab4c5', fontSize: 15, lineHeight: 1.8 }}>
+          開場動畫已移除。選擇下方連結即可直接瀏覽網站或開始排盤。
+        </p>
+        <nav aria-label="Preview 導覽" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
+          <Link href="/" style={{ ...linkStyle, background: '#c8993a', color: '#17120a' }}>
+            進入首頁
+          </Link>
+          <Link href="/chart" style={{ ...linkStyle, border: '1px solid rgba(243, 234, 214, 0.3)', color: '#f3ead6' }}>
+            直接排盤
+          </Link>
+        </nav>
+      </section>
+    </main>
   );
 }

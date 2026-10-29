@@ -24,6 +24,7 @@ interface InsightPanelProps {
 
 const TOPICS = [
   { key: 'overview',     label: '命格' },
+  { key: 'bazi',         label: '八字' },
   { key: 'love',        label: '感情' },
   { key: 'career',      label: '事业' },
   { key: 'wealth',      label: '财运' },
@@ -48,6 +49,17 @@ const TOPIC_PROMPTS: Record<string, string> = {
 
 **【优势与注意】**
 命盘天赋优势，以及需要注意的风险或功课。`,
+
+  bazi: `請根據匿名命盤中提供的四柱與伺服器確定性 baziFacts，做一份基礎八字文化解讀，嚴格區分曆法口徑，按以下結構輸出：
+
+**【四柱與口徑】**
+按年、月、日、時列出節氣四柱；若同時提供農曆口徑四柱，也單獨列出並說明不可混用。
+
+**【日主初步觀察】**
+引用 baziFacts 的日主、各柱天干十神與支中藏干，說明五行權重與簡化強弱指標；不得自行重算或更改這些資料。強弱只稱初步指標，不可當作完整旺衰、喜用神或命運定論。
+
+**【資料邊界】**
+說明本引擎的強弱評估有簡化權重限制；尚未計算喜用神、完整格局、大運或流年，不要自行補造這些結論。`,
 
   love: `请深度分析感情婚姻运，按以下结构输出：
 
@@ -275,6 +287,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
   }, [selectedSiHua]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[]) => {
+    let assistantStarted = false;
     try {
       const res = await fetch('/api/interpret', {
         method: 'POST',
@@ -282,37 +295,61 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         body: JSON.stringify({ chart, messages: apiMessages }),
       });
       if (res.status === 404) throw new Error('api-missing');
-      if (!res.ok) throw new Error('请求失败');
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null) as { error?: string } | null;
+        throw new Error(payload?.error || `解讀請求失敗（HTTP ${res.status}）。`);
+      }
       if (!res.body) throw new Error('无响应流');
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let assistantText = '';
+      let pending = '';
 
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+      assistantStarted = true;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split('\n')) {
+        pending += decoder.decode(value, { stream: true });
+        let newline = pending.indexOf('\n');
+        while (newline >= 0) {
+          const line = pending.slice(0, newline).replace(/\r$/, '');
+          pending = pending.slice(newline + 1);
+          newline = pending.indexOf('\n');
           if (!line.startsWith('data: ')) continue;
           const data = line.slice(6);
           if (data === '[DONE]') break;
           try {
-            const delta = JSON.parse(data).delta?.text ?? '';
+            const parsed = JSON.parse(data);
+            if (parsed.error) throw new Error(parsed.error);
+            const delta = parsed.delta?.text ?? '';
             assistantText += delta;
             setMessages(prev => {
               const updated = [...prev];
               updated[updated.length - 1] = { role: 'assistant', content: assistantText };
               return updated;
             });
-          } catch { /* skip */ }
+          } catch (error) {
+            if (error instanceof Error && error.message !== 'Unexpected end of JSON input') throw error;
+          }
         }
       }
     } catch (e) {
       const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, { role: 'assistant', content: missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请稍后重试。' }]);
+      const message = missing
+        ? 'AI 解讀 API 尚未部署。排盤功能仍可正常使用。'
+        : e instanceof Error ? e.message : '解讀失敗，請稍後重試。';
+      setMessages(prev => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (assistantStarted && last?.role === 'assistant' && !last.content) {
+          updated[updated.length - 1] = { role: 'assistant', content: message };
+          return updated;
+        }
+        return [...updated, { role: 'assistant', content: message }];
+      });
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -326,7 +363,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
 
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
-    const apiMessages = [...messagesRef.current, userMsg].map(m => ({
+    const apiMessages = [...messagesRef.current, userMsg].slice(-20).map(m => ({
       role: m.role,
       content: m.content,
     }));
@@ -349,9 +386,24 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
 
+      {chart.lunarInfo.solarTermBoundaryWarning && (
+        <div role="status" className="flex-shrink-0 px-3 py-2 text-[10px] leading-relaxed" style={{ color: '#b45309', background: 'rgba(245,158,11,0.1)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}>
+          出生時間位於節氣柱切換約一分鐘範圍。節氣四柱已按輸入分鐘計算，請核對出生證明或原始時間；此結果不含秒級判定。
+        </div>
+      )}
+
+      {chart.lunarInfo.baziFacts && (
+        <div className="flex-shrink-0 px-3 py-2 text-[10px] leading-relaxed" style={{ color: 'var(--t-text2)', borderBottom: '1px solid var(--t-border)' }}>
+          <span style={{ color: 'var(--t-gold)' }}>規則引擎八字資料</span>
+          <span className="ml-2">日主 {chart.lunarInfo.baziFacts.dayMaster}{chart.lunarInfo.baziFacts.dayMasterElement}</span>
+          <span className="ml-2">強弱簡化初判：{chart.lunarInfo.baziFacts.strength.label}</span>
+          <span className="ml-2">· {chart.lunarInfo.solarTermPrecision === 'exact-minute' ? '按原始時分' : '時辰中點估算節氣年/月柱'}</span>
+        </div>
+      )}
+
       {/* ── Topic buttons ── */}
       <div className="flex-shrink-0 px-2 pt-2.5 pb-2" style={{ borderBottom: '1px solid var(--t-border)' }}>
-        <div className="grid grid-cols-6 gap-1">
+        <div className="grid grid-cols-4 gap-1 sm:grid-cols-7">
           {TOPICS.map(t => {
             const isActive = activeTopic === t.key;
             return (

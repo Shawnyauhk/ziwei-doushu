@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         <li>支付服务商（支付宝 / 微信支付）：处理订单结算</li>
         <li>短信服务商（如阿里云短信）：发送验证码</li>
         <li>云服务商（如 Vercel / Cloudflare / 阿里云）：技术承载</li>
-        <li>AI 解读服务（如 Anthropic Claude）：处理你的"自由追问"对话（已做匿名化）</li>
+        <li>AI 解读服务（由服务器配置选择 Google Gemini、ModelScope 或智谱开放平台）：使用解读时，服务器会将匿名化命盘摘要和对话内容发送给当前配置的模型服务商；不发送姓名、精确公历生日、出生地或经度。数据处理也受相应服务商的条款与隐私政策约束。</li>
         <li>司法机关或政府部门基于法律法规的合法要求</li>
       </ul>
 

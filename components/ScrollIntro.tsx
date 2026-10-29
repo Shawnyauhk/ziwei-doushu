@@ -4,13 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface ScrollIntroProps {
   onComplete: () => void;
+  onSkip?: () => void;
   /** 跳过按钮文案 */
   skipLabel?: string;
 }
 
 const BEIDOU = ['天枢', '天璇', '天玑', '天权', '玉衡', '开阳', '摇光'];
 
-export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: ScrollIntroProps) {
+export default function ScrollIntro({ onComplete, onSkip, skipLabel = '跳 过' }: ScrollIntroProps) {
   // visible：整个 intro 是否在显示
   // unrolled：卷轴是否已展开（控制内容浮现）
   const [visible, setVisible] = useState(true);
@@ -31,6 +32,10 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: Scrol
   }, [onComplete]);
 
   const handleSkip = () => {
+    if (onSkip) {
+      onSkip();
+      return;
+    }
     setVisible(false);
     setTimeout(onComplete, 700);
   };
