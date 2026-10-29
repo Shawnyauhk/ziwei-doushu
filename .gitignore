@@ -7,3 +7,7 @@ dist/
 *.tsbuildinfo
 .DS_Store
 node_modules
+
+# 本機開發產物
+.dev3001.log
+.chart.html

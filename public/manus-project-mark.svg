@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="紫微命盤">
+  <rect width="512" height="512" rx="112" fill="#020810"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#d4a843" stroke-width="12"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#d4a843" stroke-opacity=".35" stroke-width="3"/>
+  <path d="M256 111 282 222 393 256 282 282 256 393 230 282 119 256 230 222Z" fill="#e8c86a"/>
+  <circle cx="256" cy="256" r="20" fill="#fff4c2"/>
+  <circle cx="256" cy="256" r="7" fill="#8b6720"/>
+</svg>
