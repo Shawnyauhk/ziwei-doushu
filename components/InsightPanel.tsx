@@ -397,7 +397,8 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
       const thr = threadsRef.current[t.key] ?? [];
       for (const m of thr.slice(-4)) history.push({ role: m.role, content: m.content });
     }
-    const apiMessages = [...history, { role: 'user', content: text }].slice(-20);
+    const apiMessages: { role: 'user' | 'assistant'; content: string }[] =
+      [...history, { role: 'user', content: text } as const].slice(-20);
 
     setThreads(prev => ({ ...prev, [targetKey]: [...(prev[targetKey] ?? []), userMsg] }));
     setInput('');
