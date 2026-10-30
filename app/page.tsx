@@ -1,9 +1,8 @@
 'use client';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import StarField from '@/components/StarField';
 import { useTheme, type Theme } from '@/components/ThemeProvider';
-import AnnouncementModal from '@/components/AnnouncementModal';
 
 // ─── 滾動入場 wrapper ────────────────────────────────────
 function FadeIn({
@@ -442,7 +441,6 @@ function FeatureVisual({ index, colors: c }: { index: number; colors: ReturnType
 // ─── 主頁 ─────────────────────────────────────────────────
 export default function HomePage() {
   const { theme } = useTheme();
-  const [announcementOpen, setAnnouncementOpen] = useState(false);
   const c = useColors(theme);
 
   const heroRef = useRef(null);
@@ -463,9 +461,6 @@ export default function HomePage() {
 
   return (
       <div style={{ background: c.bgBase, transition: 'background 0.35s ease' }} className="overflow-x-hidden">
-        {/* 致使用者公告——首次訪問全屏覆蓋，關閉後才進入首頁 */}
-      <AnnouncementModal onOpenChange={setAnnouncementOpen} />
-
       <StarField />
 
       {/* 全域性光暈 */}
@@ -480,10 +475,7 @@ export default function HomePage() {
 
       {/* ── 頂部導航 ── nav 與 hero 同色（c.bgBase），無 blur 無 border，徹底無色差帶 */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 gap-2"
-        style={{
-          background: c.navBg,
-          zIndex: announcementOpen ? 10000 : 50,
-        }}>
+        style={{ background: c.navBg }}>
         <div className="text-[11px] sm:text-xs tracking-[0.3em] sm:tracking-[0.4em] font-medium transition-colors duration-300 flex-shrink-0"
           style={{ color: c.goldSolid }}>
           紫微命盤
@@ -493,28 +485,18 @@ export default function HomePage() {
           <motion.a href="/heming"
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
-            aria-disabled={announcementOpen}
-            tabIndex={announcementOpen ? -1 : 0}
-            onClick={(event) => { if (announcementOpen) event.preventDefault(); }}
             style={{
               border: `1px solid ${c.navBorder}`,
               color: c.textMuted,
-              opacity: announcementOpen ? 0.38 : 1,
-              pointerEvents: announcementOpen ? 'none' : 'auto',
             }}>
             合盤
           </motion.a>
           <motion.a href="/chart"
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
-            aria-disabled={announcementOpen}
-            tabIndex={announcementOpen ? -1 : 0}
-            onClick={(event) => { if (announcementOpen) event.preventDefault(); }}
             style={{
               border: `1px solid ${c.goldLine}`,
               color: c.goldSolid,
-              opacity: announcementOpen ? 0.38 : 1,
-              pointerEvents: announcementOpen ? 'none' : 'auto',
             }}>
             立即起盤
           </motion.a>
