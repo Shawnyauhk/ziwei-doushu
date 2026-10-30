@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { billingEnabled, getVisitor, visitorCookieHeader } from '@/lib/credits';
+import { billingEnabled, getVisitor, missingBillingConfig, visitorCookieHeader } from '@/lib/credits';
 import { SITE_URL } from '@/lib/site';
 
 export const runtime = 'nodejs';
@@ -23,7 +23,11 @@ function getStripe(secretKey: string): Stripe {
 
 export async function POST(request: Request) {
   if (!billingEnabled()) {
-    return Response.json({ error: '收費功能尚未啟用（缺少 DATABASE_URL 或 STRIPE_SECRET_KEY）。' }, { status: 503 });
+    const missing = missingBillingConfig();
+    return Response.json(
+      { error: `收費功能尚未啟用（缺少 ${missing.join('、')}）。`, missing },
+      { status: 503 },
+    );
   }
   const secretKey = process.env.STRIPE_SECRET_KEY!.trim();
 

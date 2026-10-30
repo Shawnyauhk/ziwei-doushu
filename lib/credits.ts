@@ -34,6 +34,17 @@ export function billingEnabled(): boolean {
   return hasDatabase() && Boolean(process.env.STRIPE_SECRET_KEY?.trim());
 }
 
+/** 回報缺少的計費環境變數名稱（不含任何密鑰值），方便部署排查。 */
+export function missingBillingConfig(): string[] {
+  const missing: string[] = [];
+  if (!process.env.DATABASE_URL?.trim()) missing.push('DATABASE_URL');
+  if (!process.env.STRIPE_SECRET_KEY?.trim()) missing.push('STRIPE_SECRET_KEY');
+  if (!process.env.STRIPE_PRICE_SINGLE?.trim()) missing.push('STRIPE_PRICE_SINGLE');
+  if (!process.env.STRIPE_PRICE_PACK5?.trim()) missing.push('STRIPE_PRICE_PACK5');
+  if (!process.env.STRIPE_WEBHOOK_SECRET?.trim()) missing.push('STRIPE_WEBHOOK_SECRET');
+  return missing;
+}
+
 export async function getBalance(visitorId: string): Promise<number> {
   await ensureSchema();
   const result = await getPool().query<{ credits: number }>(

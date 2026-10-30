@@ -1,4 +1,4 @@
-import { billingEnabled, getBalance, getVisitor, visitorCookieHeader } from '@/lib/credits';
+import { billingEnabled, getBalance, getVisitor, missingBillingConfig, visitorCookieHeader } from '@/lib/credits';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const visitor = getVisitor(request);
 
   if (!billingEnabled()) {
-    const response = Response.json({ credits: 0, enabled: false });
+    const response = Response.json({ credits: 0, enabled: false, missing: missingBillingConfig() });
     if (visitor.isNew) response.headers.append('Set-Cookie', visitorCookieHeader(visitor.id));
     return response;
   }
