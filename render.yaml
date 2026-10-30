@@ -24,4 +24,4 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: NEXT_PUBLIC_SITE_URL
-        sync: false                      # 填 Render 分配的正式域名
+        value: https://ziwei-master-1s8p.onrender.com
