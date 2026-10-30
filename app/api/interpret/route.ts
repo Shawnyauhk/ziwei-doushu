@@ -1,6 +1,14 @@
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import { calculateBaziFacts } from '@/lib/ziwei/bazi';
 import { toTraditionalDisplayText } from '@/lib/ziwei/display-text';
+import {
+  billingEnabled,
+  consumeCredit,
+  getVisitor,
+  refundCredit,
+  visitorCookieHeader,
+  type Visitor,
+} from '@/lib/credits';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -136,6 +144,15 @@ function parseSseEvent(event: string, provider: Provider): SseEvent {
 }
 
 export async function POST(request: Request) {
+  const visitor = getVisitor(request);
+  const response = await handleInterpret(request, visitor);
+  if (visitor.isNew) {
+    response.headers.append('Set-Cookie', visitorCookieHeader(visitor.id));
+  }
+  return response;
+}
+
+async function handleInterpret(request: Request, visitor: Visitor): Promise<Response> {
   const providerSetting = (process.env.AI_PROVIDER || 'gemini').trim().toLowerCase();
     if (providerSetting !== 'gemini' && providerSetting !== 'modelscope' && providerSetting !== 'zhipu') {
     return jsonError('AI_PROVIDER 僅支援 gemini、modelscope 或 zhipu。', 500);
@@ -185,6 +202,32 @@ export async function POST(request: Request) {
   }
   if (totalChars > MAX_TOTAL_CHARS) return jsonError('對話內容過長，請開啟新命盤後再試。', 413);
   if (messages[messages.length - 1]?.role !== 'user') return jsonError('請先輸入問題再試。', 400);
+
+  // ── 按次計費：先扣 1 次，上游失敗時退回 ──
+  let creditCharged = false;
+  if (billingEnabled()) {
+    try {
+      const remaining = await consumeCredit(visitor.id);
+      if (remaining === null) {
+        return Response.json(
+          { error: 'AI 解讀需要購買次數，請先購買後再使用。', code: 'CREDIT_REQUIRED', credits: 0 },
+          { status: 402 },
+        );
+      }
+      creditCharged = true;
+    } catch (error) {
+      console.error('[credits] 扣次失敗', error instanceof Error ? error.message : error);
+      return jsonError('計次服務暫時無法使用，請稍後重試。', 503);
+    }
+  }
+
+  const refundIfCharged = async () => {
+    if (!creditCharged) return;
+    creditCharged = false;
+    await refundCredit(visitor.id).catch((error) => {
+      console.error('[credits] 退次失敗', error instanceof Error ? error.message : error);
+    });
+  };
 
   const model = provider === 'modelscope'
     ? (process.env.MODELSCOPE_MODEL || 'Qwen/Qwen3.5-35B-A3B').trim()
@@ -259,6 +302,7 @@ export async function POST(request: Request) {
       errorType: error instanceof Error ? error.name : 'UnknownError',
       networkCode: typeof cause === 'string' ? cause : undefined,
     });
+    await refundIfCharged();
     return connectController.signal.aborted
       ? jsonError(`${providerName} API 連線逾時（${CONNECT_TIMEOUT_MS / 1000} 秒），請稍後重試。`, 504)
       : jsonError(`無法連線至 ${providerName} API，請稍後重試。`, 502);
@@ -267,6 +311,7 @@ export async function POST(request: Request) {
   }
 
   if (!upstream.ok || !upstream.body) {
+    await refundIfCharged();
     const status = upstream.status;
     if (provider === 'modelscope' || provider === 'zhipu') {
       if (status === 400) return jsonError(`${providerName} API 拒絕請求（HTTP ${status}）。請確認模型 ID 與請求格式。`, 502);
@@ -283,6 +328,7 @@ export async function POST(request: Request) {
 
   const upstreamReader = upstream.body.getReader();
   const decoder = new TextDecoder();
+  let emittedText = false;
 
   return new Response(new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -298,11 +344,13 @@ export async function POST(request: Request) {
         const parsed = parseSseEvent(event, provider);
         if (parsed && 'error' in parsed) {
           const safeMessage = parsed.error.replaceAll(apiKey, '[redacted]').slice(0, 400);
+          if (!emittedText) void refundIfCharged();
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: `${providerName} 串流錯誤：${safeMessage}` })}\n\n`));
           finish();
           return false;
         }
         if (parsed && 'text' in parsed && parsed.text) {
+          emittedText = true;
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: { text: parsed.text } })}\n\n`));
         }
         if (parsed && 'done' in parsed) {
@@ -333,6 +381,7 @@ export async function POST(request: Request) {
         finish();
       } catch {
         if (!closed) {
+          if (!emittedText) void refundIfCharged();
           const message = `${providerName} 串流中斷，請重試。`;
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: message })}\n\n`));
           finish();
@@ -343,6 +392,7 @@ export async function POST(request: Request) {
     },
     async cancel() {
       await upstreamReader.cancel().catch(() => undefined);
+      if (!emittedText) await refundIfCharged();
     },
   }), {
     headers: {

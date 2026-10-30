@@ -226,6 +226,58 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [credits, setCredits] = useState<number | null>(null);
+  const [billingOn, setBillingOn] = useState(false);
+  const [needCredit, setNeedCredit] = useState(false);
+  const [buyingPack, setBuyingPack] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState('');
+  const [purchaseNotice, setPurchaseNotice] = useState('');
+
+  const refreshCredits = async () => {
+    try {
+      const res = await fetch('/api/credits', { cache: 'no-store' });
+      const data = (await res.json()) as { credits?: number; enabled?: boolean };
+      const next = typeof data.credits === 'number' ? data.credits : 0;
+      setCredits(next);
+      setBillingOn(Boolean(data.enabled));
+      if (next > 0) setNeedCredit(false);
+    } catch {
+      // 餘額查詢失敗不影響解讀流程
+    }
+  };
+
+  useEffect(() => { void refreshCredits(); }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('purchase') !== 'success') return;
+    setNeedCredit(false);
+    setPurchaseNotice('付款成功，解讀次數已加入。');
+    void refreshCredits();
+    params.delete('purchase');
+    const query = params.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
+    const timer = window.setTimeout(() => setPurchaseNotice(''), 8000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const buyCredits = async (pack: 'single' | 'pack5') => {
+    setBuyingPack(pack);
+    setPurchaseError('');
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pack }),
+      });
+      const data = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !data?.url) throw new Error(data?.error || '無法建立付款頁面。');
+      window.location.href = data.url;
+    } catch (error) {
+      setPurchaseError(error instanceof Error ? error.message : '無法建立付款頁面。');
+      setBuyingPack(null);
+    }
+  };
 
   // 當前激活分類的對話線程
   const messages = threads[activeTopic] ?? [];
@@ -324,6 +376,18 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chart, messages: apiMessages }),
       });
+      if (res.status === 402) {
+        setNeedCredit(true);
+        setCredits(0);
+        // 移除「準備中」佔位，改為顯示購買入口
+        setThreads(prev => {
+          const arr = [...(prev[topicKey] ?? [])];
+          const last = arr[arr.length - 1];
+          if (last?.role === 'assistant' && !last.content) arr.pop();
+          return { ...prev, [topicKey]: arr };
+        });
+        return;
+      }
       if (res.status === 404) throw new Error('api-missing');
       if (!res.ok) {
         const payload = await res.json().catch(() => null) as { error?: string } | null;
@@ -380,6 +444,7 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
     } finally {
       setLoading(false);
       loadingRef.current = false;
+      void refreshCredits();
     }
   };
 
@@ -467,6 +532,30 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
         </div>
       </div>
 
+      {/* ── 解讀次數 ── */}
+      {billingOn && (
+        <div className="flex-shrink-0 flex items-center justify-between px-3 py-1.5 text-[10px]"
+          style={{ borderBottom: '1px solid var(--t-border)', color: 'var(--t-faint)' }}>
+          <span>
+            AI 解讀剩餘 <strong style={{ color: 'var(--t-gold)' }}>{credits ?? '—'}</strong> 次
+          </span>
+          <button
+            onClick={() => setNeedCredit(true)}
+            className="px-2 py-0.5 rounded-md transition-colors"
+            style={{ border: '1px solid rgba(212,168,67,0.3)', color: 'var(--t-gold)' }}
+          >
+            購買次數
+          </button>
+        </div>
+      )}
+
+      {purchaseNotice && (
+        <div className="flex-shrink-0 px-3 py-1.5 text-[10px]"
+          style={{ color: '#10b981', borderBottom: '1px solid var(--t-border)' }}>
+          {purchaseNotice}
+        </div>
+      )}
+
       {/* ── Messages ── */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
 
@@ -525,6 +614,35 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
           })}
         </AnimatePresence>
       </div>
+
+      {/* ── 購買次數 ── */}
+      {billingOn && needCredit && (
+        <div className="flex-shrink-0 px-3 py-2.5 space-y-2"
+          style={{ borderTop: '1px solid var(--t-border)', background: 'rgba(212,168,67,0.06)' }}>
+          <div className="text-[10px] leading-relaxed" style={{ color: 'var(--t-text2)' }}>
+            AI 解讀按次計費，每次解讀扣 1 次。購買後即可繼續。
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => buyCredits('single')}
+              disabled={buyingPack !== null}
+              className="flex-1 py-1.5 rounded-lg text-[10px] font-medium transition-all disabled:opacity-50"
+              style={{ background: 'rgba(212,168,67,0.15)', border: '1px solid rgba(212,168,67,0.3)', color: 'var(--t-gold)' }}
+            >
+              {buyingPack === 'single' ? '前往付款…' : '單次解讀'}
+            </button>
+            <button
+              onClick={() => buyCredits('pack5')}
+              disabled={buyingPack !== null}
+              className="flex-1 py-1.5 rounded-lg text-[10px] font-medium transition-all disabled:opacity-50"
+              style={{ background: 'rgba(212,168,67,0.15)', border: '1px solid rgba(212,168,67,0.3)', color: 'var(--t-gold)' }}
+            >
+              {buyingPack === 'pack5' ? '前往付款…' : '5 次解讀'}
+            </button>
+          </div>
+          {purchaseError && <div className="text-[10px]" style={{ color: '#ef4444' }}>{purchaseError}</div>}
+        </div>
+      )}
 
       {/* ── Input ── */}
       <div className="flex-shrink-0 px-3 pb-3 pt-2" style={{ borderTop: '1px solid var(--t-border)' }}>

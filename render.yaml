@@ -25,3 +25,13 @@ services:
         sync: false
       - key: NEXT_PUBLIC_SITE_URL
         value: https://ziwei-master-1s8p.onrender.com
+      - key: DATABASE_URL
+        sync: false                      # Neon / Supabase 連線字串
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_SINGLE
+        sync: false
+      - key: STRIPE_PRICE_PACK5
+        sync: false
