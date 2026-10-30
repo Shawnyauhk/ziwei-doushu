@@ -1,0 +1,27 @@
+# Render Blueprint 配置（在 Render 后台 New → Blueprint → 选择本仓库即可）
+services:
+  - type: web
+    name: ziwei-master
+    runtime: node
+    region: singapore          # 选离用户最近的：singapore / oregon / frankfurt
+    plan: starter                # 7x24 在线、无休眠；需要绑卡
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"                      # Next.js 16 需要 Node >= 20.9
+      - key: AI_PROVIDER
+        value: modelscope                # 当前使用 ModelScope
+      - key: MODELSCOPE_MODEL
+        value: Qwen/Qwen3.5-35B-A3B
+      - key: ZHIPU_MODEL
+        value: glm-4.7-flash
+      - key: MODELSCOPE_API_KEY
+        sync: false                      # 密钥不写入仓库，部署时在 Render 后台填写
+      - key: ZHIPU_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false                      # 填 Render 分配的正式域名

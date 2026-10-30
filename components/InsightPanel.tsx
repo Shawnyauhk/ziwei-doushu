@@ -165,7 +165,7 @@ function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
   if (!display.trim()) {
     return (
       <div className="text-[11px] leading-relaxed flex items-center gap-1.5" style={{ color: 'var(--t-faint)' }}>
-        命理師準備中…
+        命理師正在研讀命盤，請稍候…
         {streaming && (
           <span
             className="inline-block w-1.5 h-3 rounded-sm animate-pulse align-middle"
@@ -316,7 +316,8 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
   }, [selectedSiHua]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[], topicKey: string) => {
-    let assistantStarted = false;
+    // 先插入「準備中」佔位訊息：等待上游連線與首個 token 期間就顯示提示，避免畫面空白被誤認為 BUG
+    setThreads(prev => ({ ...prev, [topicKey]: [...(prev[topicKey] ?? []), { role: 'assistant', content: '' }] }));
     try {
       const res = await fetch('/api/interpret', {
         method: 'POST',
@@ -334,9 +335,6 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
       const decoder = new TextDecoder();
       let assistantText = '';
       let pending = '';
-
-      setThreads(prev => ({ ...prev, [topicKey]: [...(prev[topicKey] ?? []), { role: 'assistant', content: '' }] }));
-      assistantStarted = true;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -373,7 +371,7 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
       setThreads(prev => {
         const arr = [...(prev[topicKey] ?? [])];
         const last = arr[arr.length - 1];
-        if (assistantStarted && last?.role === 'assistant' && !last.content) {
+        if (last?.role === 'assistant' && !last.content) {
           arr[arr.length - 1] = { role: 'assistant', content: message };
           return { ...prev, [topicKey]: arr };
         }

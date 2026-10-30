@@ -114,26 +114,6 @@ export default function AnnouncementModal({ onOpenChange }: AnnouncementModalPro
               >×</button>
             </div>
 
-            {/* 限時免費 banner（最關鍵資訊，置頂強調）*/}
-            <div style={{
-              margin: '14px 22px 0',
-              padding: '12px 16px',
-              background: 'linear-gradient(135deg, #fff5e3 0%, #ffe1c0 100%)',
-              border: '1.5px dashed rgba(232,132,62,0.5)',
-              borderRadius: '12px',
-              flexShrink: 0,
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '10px', letterSpacing: '0.3em', color: '#c45a2d', marginBottom: '4px', fontWeight: 600 }}>
-                LIMITED TIME · 限時回饋
-              </div>
-              <div style={{ fontSize: '14px', color: '#8b3a1a', fontWeight: 600, lineHeight: 1.6 }}>
-                <span style={{ fontSize: '16px', color: '#c45a2d', fontWeight: 700 }}>5 月 1 日 — 5 月 8 日</span>
-                <br />
-                平臺全部功能 + AI 提問 全部免費開放
-              </div>
-            </div>
-
             {/* 正文（可滾動）*/}
             <div style={{
               padding: '18px 28px 24px',
