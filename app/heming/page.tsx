@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import BackHomeLink from '@/components/BackHomeLink';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
 import { formToBirthInfo } from '@/lib/ziwei/share';
@@ -68,6 +68,43 @@ export default function HemingPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
 
+  // ─── 按次計費狀態 ─────────────────────────────────────────
+  const [needCredit, setNeedCredit] = useState(false);
+  const [buying, setBuying] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState('');
+  const [purchaseNotice, setPurchaseNotice] = useState('');
+
+  // 付款回跳：清除提示並重新整理
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('purchase') !== 'success') return;
+    setNeedCredit(false);
+    setPurchaseNotice('付款成功，合盤次數已加入。');
+    params.delete('purchase');
+    const query = params.toString();
+    window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
+    const timer = window.setTimeout(() => setPurchaseNotice(''), 8000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const buyCredits = async (pack: 'single' | 'pack5') => {
+    setBuying(pack);
+    setPurchaseError('');
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pack, returnTo: '/heming' }),
+      });
+      const data = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !data?.url) throw new Error(data?.error || '無法建立付款頁面。');
+      window.location.href = data.url;
+    } catch (error) {
+      setPurchaseError(error instanceof Error ? error.message : '無法建立付款頁面。');
+      setBuying(null);
+    }
+  };
+
   // ─── 起盤（單次呼叫，返回 chart 給統一流程使用）──────────
   // 開源版不含後端 /api/generate：直接用本倉庫的排盤引擎在瀏覽器裡起盤
   const generateChart = useCallback(async (info: BirthInfo): Promise<ZiweiChart | null> => {
@@ -92,6 +129,7 @@ export default function HemingPage() {
     setAnalyzing(true);
     setAnalysis('');
     setAnalysisError(false);
+    setNeedCredit(false);
 
     try {
       // 並行起兩張盤（如果還沒起）
@@ -116,26 +154,42 @@ export default function HemingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
       });
+      if (res.status === 402) {
+        setNeedCredit(true);
+        setAnalysisError(false);
+        return;
+      }
       if (res.status === 404) { setApiMissing(true); throw new Error('api-missing'); }
       if (!res.ok || !res.body) throw new Error();
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let text = '';
+      let pending = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split('\n')) {
+        // 必須跨 chunk 緩衝：SSE 一行可能被 TCP 切成兩段，直接 split 會丟字
+        pending += decoder.decode(value, { stream: true });
+        let newline = pending.indexOf('\n');
+        while (newline >= 0) {
+          const line = pending.slice(0, newline).replace(/\r$/, '');
+          pending = pending.slice(newline + 1);
+          newline = pending.indexOf('\n');
           if (!line.startsWith('data: ')) continue;
           const data = line.slice(6);
-          if (data === '[DONE]') break;
+          if (data === '[DONE]') continue;
           try {
-            const delta = JSON.parse(data).delta?.text ?? '';
+            const parsed = JSON.parse(data) as { delta?: { text?: string }; error?: string };
+            if (parsed.error) throw new Error(parsed.error);
+            const delta = parsed.delta?.text ?? '';
+            if (!delta) continue;
             text += delta;
             setAnalysis(text);
-          } catch { /* skip */ }
+          } catch (error) {
+            if (error instanceof Error && error.message !== 'Unexpected end of JSON input') throw error;
+          }
         }
       }
       // scroll to analysis
@@ -229,8 +283,50 @@ export default function HemingPage() {
             <span style={{ fontSize: 'calc(11px * var(--fs))', letterSpacing: '0.3em', color: 'var(--tx-3)' }}>合盤分析 · HEMING</span>
           </div>
 
+          {/* 付款成功提示 */}
+          {purchaseNotice && (
+            <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.35)', background: 'rgba(16,185,129,0.08)', fontSize: 'calc(12px * var(--fs))', color: '#10b981' }}>
+              {purchaseNotice}
+            </div>
+          )}
+
+          {/* 次數不足：購買入口 */}
+          {needCredit && !analyzing && (
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-2)', marginBottom: '6px' }}>
+                合盤分析按次計費，每次扣 1 次
+              </div>
+              <div style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', marginBottom: '20px' }}>
+                購買後即可繼續分析雙方命盤
+              </div>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {(['single', 'pack5'] as const).map(pack => (
+                  <button
+                    key={pack}
+                    onClick={() => buyCredits(pack)}
+                    disabled={buying !== null}
+                    style={{
+                      padding: '10px 22px', borderRadius: 'var(--r-pill)',
+                      border: '1px solid var(--ac-bdr)', background: 'var(--ac-bg)',
+                      color: 'var(--ac)', fontSize: 'calc(13px * var(--fs))', fontWeight: 500,
+                      cursor: buying !== null ? 'not-allowed' : 'pointer',
+                      opacity: buying !== null && buying !== pack ? 0.5 : 1,
+                    }}
+                  >
+                    {buying === pack ? '前往付款…' : pack === 'single' ? '單次合盤' : '5 次合盤'}
+                  </button>
+                ))}
+              </div>
+              {purchaseError && (
+                <div style={{ marginTop: '14px', fontSize: 'calc(12px * var(--fs))', color: '#dc2626' }}>
+                  {purchaseError}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* 狀態分支 */}
-          {!analysis && !analyzing && (
+          {!analysis && !analyzing && !needCredit && (
             <div style={{ textAlign: 'center', padding: '32px 0' }}>
               <div style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-3)', marginBottom: '24px', lineHeight: 1.7 }}>
                 填好雙方出生資訊後，點選下方按鈕<br />
@@ -275,7 +371,7 @@ export default function HemingPage() {
           {analysisError && (
             <div style={{ padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--bdr)', background: 'var(--bg-card)', fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-2)', marginTop: '12px' }}>
               {apiMissing
-                ? '開源版不含合盤 AI 分析介面（/api/heming），需要你自己實現後才能用。兩人的命盤可以分別到「排盤」頁（/chart）檢視。'
+                ? '合盤分析服務暫時不可用（/api/heming 未就緒），請稍後重試或先到「排盤」頁分別檢視兩張命盤。'
                 : '分析暫時不可用，請重試。'}
             </div>
           )}

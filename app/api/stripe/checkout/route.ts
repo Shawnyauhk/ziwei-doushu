@@ -31,12 +31,19 @@ export async function POST(request: Request) {
   }
   const secretKey = process.env.STRIPE_SECRET_KEY!.trim();
 
-  const body = (await request.json().catch(() => null)) as { pack?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as { pack?: unknown; returnTo?: unknown } | null;
   const packKey = (typeof body?.pack === 'string' ? body.pack : 'single') as PackKey;
   const pack = PACKS[packKey];
   if (!pack) {
     return Response.json({ error: '無效的購買方案。' }, { status: 400 });
   }
+
+  // 付款完成後回到來源頁面（僅允許站內相對路徑）
+  const returnTo = typeof body?.returnTo === 'string'
+    && body.returnTo.startsWith('/')
+    && !body.returnTo.startsWith('//')
+    ? body.returnTo.slice(0, 200)
+    : '/chart';
 
   const priceId = process.env[pack.priceEnv]?.trim();
   if (!priceId) {
@@ -50,8 +57,8 @@ export async function POST(request: Request) {
     const session = await getStripe(secretKey).checkout.sessions.create({
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/chart?purchase=success`,
-      cancel_url: `${origin}/chart?purchase=cancel`,
+      success_url: `${origin}${returnTo}?purchase=success`,
+      cancel_url: `${origin}${returnTo}?purchase=cancel`,
       client_reference_id: visitor.id,
       metadata: {
         visitorId: visitor.id,
