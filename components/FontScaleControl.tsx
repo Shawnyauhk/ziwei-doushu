@@ -4,22 +4,22 @@ import { FONT_SCALE_LABELS, FONT_SCALE_ORDER, useFontScale, type FontScale } fro
 
 /** 各档位的预览字号（固定 px，便于直观比较差异）与缩放比例 */
 const PREVIEW: Record<FontScale, { px: number; percent: string }> = {
-  normal: { px: 13, percent: '100%' },
-  large: { px: 15, percent: '112%' },
-  xlarge: { px: 17, percent: '124%' },
-  xxlarge: { px: 19, percent: '140%' },
+  xlarge: { px: 15, percent: '124%' },
+  xxlarge: { px: 17, percent: '140%' },
+  xxxlarge: { px: 19, percent: '160%' },
+  huge: { px: 21, percent: '180%' },
+  max: { px: 23, percent: '200%' },
 };
 
 /**
  * 全域字體放大控制：固定於畫面右側中線的 A+ 按鈕，
- * 點擊展開 標準 / 大 / 特大 選單。只縮放文字（--fs），不改間距與容器尺寸。
+ * 點擊展開檔位選單。控制項本身使用固定尺寸，避免在 200% 下撐爆畫面。
  */
 export default function FontScaleControl() {
   const { scale, setScale } = useFontScale();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // 點擊外部或按 Esc 關閉
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (event: PointerEvent) => {
@@ -37,11 +37,6 @@ export default function FontScaleControl() {
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [open]);
-
-  const choose = (level: typeof FONT_SCALE_ORDER[number]) => {
-    setScale(level);
-    setOpen(false);
-  };
 
   return (
     <div ref={rootRef}>
@@ -86,7 +81,7 @@ export default function FontScaleControl() {
             right: 36,
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 'calc(156px * var(--fs))',
+            width: 168,
             padding: '6px',
             borderRadius: 12,
             border: '1px solid var(--bdr-med)',
@@ -95,7 +90,7 @@ export default function FontScaleControl() {
           }}
         >
           <div style={{
-            fontSize: 'calc(10px * var(--fs))',
+            fontSize: 10,
             letterSpacing: '0.18em',
             color: 'var(--tx-3)',
             padding: '4px 8px 6px',
@@ -111,11 +106,11 @@ export default function FontScaleControl() {
                 type="button"
                 role="menuitemradio"
                 aria-checked={active}
-                onClick={() => choose(level)}
+                onClick={() => { setScale(level); setOpen(false); }}
                 className="fontscale-option w-full flex items-center justify-between rounded-lg"
                 style={{
                   gap: 8,
-                  padding: '7px 8px',
+                  padding: '6px 8px',
                   border: 'none',
                   background: active ? 'var(--ac-bg)' : undefined,
                   color: active ? 'var(--ac)' : 'var(--tx-1)',
@@ -126,7 +121,7 @@ export default function FontScaleControl() {
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{
-                    width: 20,
+                    width: 24,
                     textAlign: 'center',
                     fontSize: PREVIEW[level].px,
                     lineHeight: 1,
@@ -134,11 +129,11 @@ export default function FontScaleControl() {
                   }}>
                     A
                   </span>
-                  <span style={{ fontSize: 'calc(12px * var(--fs))' }}>{FONT_SCALE_LABELS[level]}</span>
+                  <span style={{ fontSize: 12 }}>{FONT_SCALE_LABELS[level]}</span>
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 'calc(10px * var(--fs))', color: 'var(--tx-3)' }}>{PREVIEW[level].percent}</span>
-                  <span style={{ width: 10, fontSize: 'calc(11px * var(--fs))', color: 'var(--ac)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--tx-3)' }}>{PREVIEW[level].percent}</span>
+                  <span style={{ width: 10, fontSize: 11, color: 'var(--ac)' }}>
                     {active ? '✓' : ''}
                   </span>
                 </span>

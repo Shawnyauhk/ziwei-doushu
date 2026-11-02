@@ -39,6 +39,7 @@ export default function LibrarySearch() {
         placeholder="搜尋古籍原文，如：七殺朝鬥 / 雙祿朝垣 / 化忌"
         style={{
           flex: 1,
+          minWidth: 0,
           padding: '10px 14px',
           border: 'none',
           outline: 'none',
@@ -51,6 +52,8 @@ export default function LibrarySearch() {
         onClick={submit}
         disabled={isPending || !q.trim()}
         style={{
+          flexShrink: 0,
+          whiteSpace: 'nowrap',
           padding: '10px 22px',
           borderRadius: '8px',
           border: 'none',

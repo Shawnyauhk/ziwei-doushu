@@ -33,6 +33,17 @@ const TOPICS = [
   { key: 'personality', label: '性格' },
 ] as const;
 
+/** 各分類的常問問題：點擊即直接送出，不用手動輸入 */
+const TOPIC_QUESTIONS: Record<string, string[]> = {
+  overview: ['我的命格最大優勢是什麼？', '今年運勢重點在哪裡？', '我適合往哪個方向發展？'],
+  bazi: ['我的日主強弱代表什麼？', '五行需要補什麼？', '八字看事業適合什麼？'],
+  love: ['我的正緣什麼時候出現？', '我適合什麼樣的伴侶？', '感情上最容易遇到什麼問題？'],
+  career: ['我適合打工還是創業？', '今年適合換工作嗎？', '事業高峰大約在哪個年齡？'],
+  wealth: ['我的財運類型是什麼？', '適合投資還是守成？', '近期有破財風險嗎？'],
+  health: ['我需要特別注意哪個部位？', '哪個季節要特別小心？', '日常如何改善體質？'],
+  personality: ['我的性格優勢與盲點是什麼？', '別人眼中的我是怎樣的？', '如何改善人際關係？'],
+};
+
 const TOPIC_PROMPTS: Record<string, string> = {
   overview: `請生成命格總覽，按以下結構輸出：
 
@@ -646,18 +657,41 @@ ${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主
 
       {/* ── Input ── */}
       <div className="flex-shrink-0 px-3 pb-3 pt-2" style={{ borderTop: '1px solid var(--t-border)' }}>
+
+        {/* 當前分類的常問問題：點擊直接送出 */}
+        {!needCredit && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {(TOPIC_QUESTIONS[activeTopic] ?? []).map(question => (
+              <button
+                key={question}
+                type="button"
+                onClick={() => sendMessage(question)}
+                disabled={loading}
+                className="insight-chip px-2 py-1 rounded-full text-[10px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  boxShadow: 'inset 0 0 0 1px rgba(212,168,67,0.3)',
+                  color: 'var(--t-text2)',
+                  background: 'rgba(212,168,67,0.03)',
+                }}
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex gap-2">
           <input
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder="繼續追問，如：今年適合換工作嗎？"
+            placeholder="可輸入追問的問題…"
             disabled={loading}
-            className="flex-1 rounded-lg px-3 py-2 text-[11px] focus:outline-none transition-colors"
+            className="insight-input flex-1 rounded-lg px-3 py-2 text-[11px] transition-colors"
             style={{
               background: 'var(--t-card)',
-              border: '1px solid var(--t-border)',
+              border: '1px solid rgba(212,168,67,0.35)',
               color: 'var(--t-text)',
             }}
           />

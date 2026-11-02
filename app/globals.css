@@ -67,6 +67,22 @@
   --r-lg:  16px;
   --r-xl:  24px;
   --r-pill:999px;
+
+  /* 舊版解讀面板 token 別名（InsightPanel / ChatPanel / ChartSummary /
+     StarDetailPanel / ChartBoard / PatternsCard / TimeNav /
+     FamousPersonCard / PalaceCell 仍在使用），統一映射到現行 token，
+     避免 var() 未定義導致整條 border/color 宣告失效。
+     以間接引用撰寫，故暗色模式會自動跟隨下方的 token 覆蓋。 */
+  --t-bg:          var(--bg-0);
+  --t-surface:     var(--bg-1);
+  --t-card:        var(--bg-card);
+  --t-border:      var(--bdr-med);
+  --t-border-acc:  var(--ac-bdr);
+  --t-gold:        var(--ac);
+  --t-text:        var(--tx-1);
+  --t-text1:       var(--tx-0);
+  --t-text2:       var(--tx-2);
+  --t-faint:       var(--tx-3);
 }
 
 /* ─── 暗色模式 Token 覆蓋 ──────────────────────────────── */
@@ -502,12 +518,28 @@ body {
 /* 命盤格線密集，固定以 124% 呈現；A+ 只調整下方解讀文字 */
 .chart-fixed-scale { --fs: 1.24 !important; }
 
+/* 解讀面板：輸入框描邊與常問問題 */
+.insight-input::placeholder { color: var(--t-faint); opacity: 0.85; }
+.insight-input:focus {
+  outline: none;
+  border-color: rgba(212, 168, 67, 0.7) !important;
+  box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.14);
+}
+/* 描邊改用 inset box-shadow（不佔布局寬度），hover 需 !important 才能壓過內聯樣式 */
+.insight-chip:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px rgba(212, 168, 67, 0.6) !important;
+  color: var(--t-gold);
+  background: rgba(212, 168, 67, 0.07);
+}
+
 /* 字體大小選單的 hover（內聯樣式無法寫 :hover；選中項由內聯背景覆蓋） */
 .fontscale-option:not([aria-checked="true"]):hover { background: rgba(0, 0, 0, 0.045); }
 [data-theme="dark"] .fontscale-option:not([aria-checked="true"]):hover { background: rgba(255, 255, 255, 0.07); }
-html[data-fontscale="large"]   { --fs: 1.12; }
-html[data-fontscale="xlarge"]  { --fs: 1.24; }
-html[data-fontscale="xxlarge"] { --fs: 1.4;  }
+html[data-fontscale="xlarge"]   { --fs: 1.24; }
+html[data-fontscale="xxlarge"]  { --fs: 1.4;  }
+html[data-fontscale="xxxlarge"] { --fs: 1.6;  }
+html[data-fontscale="huge"]     { --fs: 1.8;  }
+html[data-fontscale="max"]      { --fs: 2;    }
 
 /* Tailwind 任意 px 字級（全站僅這 7 種） */
 html .text-\[7px\]  { font-size: calc(7px  * var(--fs)); }
