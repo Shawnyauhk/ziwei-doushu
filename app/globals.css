@@ -499,6 +499,9 @@ body {
 /* 分享卡是固定尺寸的海報輸出，不跟隨字體放大，避免文字溢出卡片 */
 #share-card { --fs: 1 !important; }
 
+/* 命盤格線密集，固定以 124% 呈現；A+ 只調整下方解讀文字 */
+.chart-fixed-scale { --fs: 1.24 !important; }
+
 /* 字體大小選單的 hover（內聯樣式無法寫 :hover；選中項由內聯背景覆蓋） */
 .fontscale-option:not([aria-checked="true"]):hover { background: rgba(0, 0, 0, 0.045); }
 [data-theme="dark"] .fontscale-option:not([aria-checked="true"]):hover { background: rgba(255, 255, 255, 0.07); }
