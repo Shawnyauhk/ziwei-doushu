@@ -69,7 +69,7 @@ export default function ChartPage() {
           border: '1px solid #ccc', borderRadius: 8, background: 'transparent',
         }}
       >
-        ← 重新起盤
+        重新起盤
       </button>
 
       <div className="chart-result-layout">
