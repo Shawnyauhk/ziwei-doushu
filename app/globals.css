@@ -57,6 +57,8 @@
   /* 卡片/內容塊背景 */
   --bg-card: #FFFFFF;
   --bg-page: #fbf6e8;
+  /* 不透明表面：用於浮層/選單，避免底下內容透出 */
+  --surface-solid: #FFFFFF;
 
   /* 圓角 */
   --r-xs:  4px;
@@ -97,6 +99,7 @@
 
   --bg-card: rgba(255,255,255,0.04);
   --bg-page: #020810;
+  --surface-solid: #0f1728;
 }
 
 /* ─── 全域性基礎 ───────────────────────────────────────────── */
@@ -495,6 +498,10 @@ body {
 :root { --fs: 1; }
 /* 分享卡是固定尺寸的海報輸出，不跟隨字體放大，避免文字溢出卡片 */
 #share-card { --fs: 1 !important; }
+
+/* 字體大小選單的 hover（內聯樣式無法寫 :hover；選中項由內聯背景覆蓋） */
+.fontscale-option:not([aria-checked="true"]):hover { background: rgba(0, 0, 0, 0.045); }
+[data-theme="dark"] .fontscale-option:not([aria-checked="true"]):hover { background: rgba(255, 255, 255, 0.07); }
 html[data-fontscale="large"]  { --fs: 1.12; }
 html[data-fontscale="xlarge"] { --fs: 1.24; }
 
