@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('ziwei-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','dark');var f=localStorage.getItem('ziwei-fontscale');if(f==='large'||f==='xlarge')document.documentElement.setAttribute('data-fontscale',f);}catch(e){}})();` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('ziwei-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);else document.documentElement.setAttribute('data-theme','dark');var f=localStorage.getItem('ziwei-fontscale-v2');if(f==='large'||f==='xlarge'||f==='xxlarge')document.documentElement.setAttribute('data-fontscale',f);else if(f!=='normal')document.documentElement.setAttribute('data-fontscale','xlarge');}catch(e){}})();` }} />
       </head>
       <body className="min-h-screen">
         <ThemeProvider>

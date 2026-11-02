@@ -1,12 +1,13 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { FONT_SCALE_LABELS, FONT_SCALE_ORDER, useFontScale } from './FontScaleProvider';
+import { FONT_SCALE_LABELS, FONT_SCALE_ORDER, useFontScale, type FontScale } from './FontScaleProvider';
 
 /** 各档位的预览字号（固定 px，便于直观比较差异）与缩放比例 */
-const PREVIEW: Record<string, { px: number; percent: string }> = {
+const PREVIEW: Record<FontScale, { px: number; percent: string }> = {
   normal: { px: 13, percent: '100%' },
   large: { px: 15, percent: '112%' },
   xlarge: { px: 17, percent: '124%' },
+  xxlarge: { px: 19, percent: '140%' },
 };
 
 /**
@@ -71,7 +72,7 @@ export default function FontScaleControl() {
         onMouseEnter={(event) => { event.currentTarget.style.opacity = '1'; }}
         onMouseLeave={(event) => { if (!open) event.currentTarget.style.opacity = '0.85'; }}
       >
-        <span style={{ fontSize: 'calc(13px * var(--fs))', fontWeight: 600, letterSpacing: '-0.02em' }}>
+        <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '-0.02em' }}>
           A<span style={{ fontSize: '0.72em', verticalAlign: 'super' }}>+</span>
         </span>
       </button>
@@ -85,7 +86,7 @@ export default function FontScaleControl() {
             right: 36,
             top: '50%',
             transform: 'translateY(-50%)',
-            width: 156,
+            width: 'calc(156px * var(--fs))',
             padding: '6px',
             borderRadius: 12,
             border: '1px solid var(--bdr-med)',
