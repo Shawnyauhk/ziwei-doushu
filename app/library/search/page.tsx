@@ -18,26 +18,26 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
       <div className="px-6 py-4 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
+        <Link href="/library" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 古籍庫
         </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
+        <div style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
           搜尋結果
         </div>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
+        <Link href="/" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
           首頁 →
         </Link>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="text-center mb-10">
-          <div style={{ fontSize: '13px', color: 'var(--tx-3)', letterSpacing: '0.15em', marginBottom: '4px' }}>
+          <div style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.15em', marginBottom: '4px' }}>
             搜尋關鍵詞
           </div>
           <h1 style={{ fontSize: 'clamp(22px, 3.5vw, 32px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
             「{q || '（空）'}」
           </h1>
-          <div style={{ fontSize: '12px', color: 'var(--tx-3)', marginTop: '8px' }}>
+          <div style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-3)', marginTop: '8px' }}>
             共找到 <strong style={{ color: 'var(--ac)' }}>{hits.length}</strong> 條古籍原文匹配
           </div>
         </div>
@@ -51,17 +51,17 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             color: 'var(--tx-2)',
             border: '1px solid rgba(184,146,42,0.15)',
           }}>
-            <div style={{ fontSize: '40px', marginBottom: '12px', opacity: 0.4 }}>📜</div>
+            <div style={{ fontSize: 'calc(40px * var(--fs))', marginBottom: '12px', opacity: 0.4 }}>📜</div>
             {q ? (
               <>
-                <div style={{ fontSize: '14px', marginBottom: '6px' }}>暫未在已收錄古籍中找到這個關鍵詞</div>
-                <div style={{ fontSize: '11px', color: 'var(--tx-3)', lineHeight: 1.7 }}>
+                <div style={{ fontSize: 'calc(14px * var(--fs))', marginBottom: '6px' }}>暫未在已收錄古籍中找到這個關鍵詞</div>
+                <div style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', lineHeight: 1.7 }}>
                   我們持續補充內容中。可嘗試搜尋：<br />
                   <span style={{ color: 'var(--ac)' }}>七殺朝鬥 / 雙祿朝垣 / 化忌 / 紫微 / 命宮 / 機月同梁</span>
                 </div>
               </>
             ) : (
-              <div style={{ fontSize: '13px' }}>請輸入要搜尋的關鍵詞</div>
+              <div style={{ fontSize: 'calc(13px * var(--fs))' }}>請輸入要搜尋的關鍵詞</div>
             )}
           </div>
         ) : (
@@ -88,7 +88,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    fontSize: '11px',
+                    fontSize: 'calc(11px * var(--fs))',
                     color: 'var(--tx-3)',
                     marginBottom: '8px',
                     letterSpacing: '0.1em',
@@ -99,7 +99,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                   </div>
                   <div
                     style={{
-                      fontSize: '14px',
+                      fontSize: 'calc(14px * var(--fs))',
                       color: 'var(--tx-0)',
                       lineHeight: 1.9,
                       letterSpacing: '0.02em',

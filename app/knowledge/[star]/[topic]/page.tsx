@@ -109,20 +109,20 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
       {/* 頂欄 */}
       <div className="px-6 py-4 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
+        <Link href="/" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 首頁
         </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
+        <div style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
           倪師方法論 · 知識庫
         </div>
-        <Link href="/chart" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
+        <Link href="/chart" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
           起盤 →
         </Link>
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-12">
         {/* 麵包屑 */}
-        <nav style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em', marginBottom: '16px' }}>
+        <nav style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.1em', marginBottom: '16px' }}>
           <Link href="/" style={{ color: 'var(--tx-3)', textDecoration: 'none' }}>首頁</Link>
           <span style={{ margin: '0 8px' }}>/</span>
           <Link href="/knowledge" style={{ color: 'var(--tx-3)', textDecoration: 'none' }}>知識庫</Link>
@@ -134,14 +134,14 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
 
         {/* 標題區 */}
         <header style={{ marginBottom: '36px' }}>
-          <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
+          <div style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.25em', marginBottom: '8px' }}>
             {toTraditionalDisplayText(data.topicLabel)} · 倪海廈體系詳解
           </div>
           <h1 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em', lineHeight: 1.2 }}>
             {toTraditionalDisplayText(star)}入{toTraditionalDisplayText(data.palaceName)}宮
           </h1>
           {STAR_BRIEF_SEO[star] && (
-            <p style={{ fontSize: '13px', color: 'var(--tx-2)', marginTop: '14px', lineHeight: 1.8 }}>
+            <p style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-2)', marginTop: '14px', lineHeight: 1.8 }}>
               {toTraditionalDisplayText(STAR_BRIEF_SEO[star])}
             </p>
           )}
@@ -150,7 +150,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         {/* 內容 4 段 */}
         {data.parsed.dingdiao && (
           <Section title="一句話定調" gradient>
-            <p style={{ fontSize: '17px', color: 'var(--tx-0)', lineHeight: 1.9, fontWeight: 500, letterSpacing: '0.04em' }}>
+            <p style={{ fontSize: 'calc(17px * var(--fs))', color: 'var(--tx-0)', lineHeight: 1.9, fontWeight: 500, letterSpacing: '0.04em' }}>
               {toTraditionalDisplayText(data.parsed.dingdiao)}
             </p>
           </Section>
@@ -158,7 +158,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
 
         {data.parsed.lundian && (
           <Section title="核心論斷">
-            <div style={{ fontSize: '15px', color: 'var(--tx-0)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
+            <div style={{ fontSize: 'calc(15px * var(--fs))', color: 'var(--tx-0)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
               {toTraditionalDisplayText(data.parsed.lundian)}
             </div>
           </Section>
@@ -166,7 +166,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
 
         {data.parsed.yiju && (
           <Section title="命盤依據">
-            <div style={{ fontSize: '14px', color: 'var(--tx-0)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
+            <div style={{ fontSize: 'calc(14px * var(--fs))', color: 'var(--tx-0)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
               {toTraditionalDisplayText(data.parsed.yiju)}
             </div>
           </Section>
@@ -174,7 +174,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
 
         {data.parsed.chuchu && (
           <Section title="經典出處" minimal>
-            <div style={{ fontSize: '13px', color: 'var(--tx-2)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
+            <div style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-2)', lineHeight: 2, letterSpacing: '0.02em', whiteSpace: 'pre-wrap' }}>
               {toTraditionalDisplayText(data.parsed.chuchu)}
             </div>
           </Section>
@@ -189,10 +189,10 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
           border: '1px solid rgba(184,146,42,0.3)',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '14px', color: 'var(--tx-0)', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '6px' }}>
+          <div style={{ fontSize: 'calc(14px * var(--fs))', color: 'var(--tx-0)', fontWeight: 600, letterSpacing: '0.1em', marginBottom: '6px' }}>
             想看你自己命盤的{displayTopicLabel}？
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--tx-2)', marginBottom: '16px' }}>
+          <div style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-2)', marginBottom: '16px' }}>
             輸入生辰起盤 · 倪師正宗解讀 · AI 答疑伴學
           </div>
           <Link href="/chart" style={{
@@ -201,7 +201,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
             background: 'linear-gradient(135deg, #d4a948 0%, #b8922a 100%)',
             color: 'white',
             borderRadius: '999px',
-            fontSize: '14px',
+            fontSize: 'calc(14px * var(--fs))',
             fontWeight: 600,
             letterSpacing: '0.15em',
             textDecoration: 'none',
@@ -221,7 +221,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
                   key={t}
                   href={`/knowledge/${slug}/${t}`}
                   style={{
-                    fontSize: '12px',
+                    fontSize: 'calc(12px * var(--fs))',
                     padding: '6px 12px',
                     background: 'var(--bg-card)',
                     border: '1px solid rgba(184,146,42,0.25)',
@@ -245,7 +245,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
                 key={s}
                 href={`/knowledge/${STAR_TO_SLUG[s]}/${topic}`}
                 style={{
-                  fontSize: '12px',
+                  fontSize: 'calc(12px * var(--fs))',
                   padding: '6px 12px',
                   background: 'var(--bg-card)',
                   border: '1px solid rgba(184,146,42,0.25)',
@@ -269,17 +269,17 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
           borderRadius: '10px',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '11px', color: 'var(--ac-dim)', letterSpacing: '0.15em', marginBottom: '6px' }}>
+          <div style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--ac-dim)', letterSpacing: '0.15em', marginBottom: '6px' }}>
             想讀原典？
           </div>
-          <Link href="/library" style={{ fontSize: '13px', color: 'var(--ac)', fontWeight: 500, letterSpacing: '0.1em', textDecoration: 'none' }}>
+          <Link href="/library" style={{ fontSize: 'calc(13px * var(--fs))', color: 'var(--ac)', fontWeight: 500, letterSpacing: '0.1em', textDecoration: 'none' }}>
             📜 查閱古籍原典庫 — 紫微斗數全集 / 全書 / 骨髓賦 →
           </Link>
         </div>
       </article>
 
       {/* 頁尾 */}
-      <footer style={{ borderTop: '1px solid rgba(184,146,42,0.15)', padding: '20px 24px', textAlign: 'center', fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em' }}>
+      <footer style={{ borderTop: '1px solid rgba(184,146,42,0.15)', padding: '20px 24px', textAlign: 'center', fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.1em' }}>
         <div style={{ marginBottom: '6px' }}>紫微研究 · 基於倪海廈正宗體系 · 僅供學習參考</div>
         <div style={{ opacity: 0.85 }}>本平臺不構成任何醫療、投資、法律或重大決策建議</div>
       </footer>
@@ -294,7 +294,7 @@ function Section({ title, children, gradient, minimal }: { title: string; childr
         display: 'inline-flex',
         alignItems: 'center',
         gap: '8px',
-        fontSize: '13px',
+        fontSize: 'calc(13px * var(--fs))',
         color: 'var(--ac)',
         fontWeight: 600,
         letterSpacing: '0.2em',

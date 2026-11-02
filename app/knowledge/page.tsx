@@ -22,13 +22,13 @@ export default function KnowledgeHomePage() {
       {/* 頂欄 */}
       <div className="px-6 py-4 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
+        <Link href="/" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
           ← 首頁
         </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
+        <div style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
           倪師方法論 · 知識庫
         </div>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
+        <Link href="/library" style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
           古籍 →
         </Link>
       </div>
@@ -37,13 +37,13 @@ export default function KnowledgeHomePage() {
       <div className="text-center px-6 py-14">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
-          <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>
+          <span style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.4))' }} />
         </div>
         <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '12px' }}>
           紫微斗數知識庫
         </h1>
-        <p style={{ fontSize: '14px', color: 'var(--tx-2)', letterSpacing: '0.08em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
+        <p style={{ fontSize: 'calc(14px * var(--fs))', color: 'var(--tx-2)', letterSpacing: '0.08em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
           14 主星 × 13 宮位 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 項專題<br />
           基於倪海廈《天紀》體系編纂 · 含古籍引證
         </p>
@@ -51,7 +51,7 @@ export default function KnowledgeHomePage() {
 
       {/* 14 主星卡片 */}
       <div className="max-w-5xl mx-auto px-6 pb-20">
-        <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em', textAlign: 'center', marginBottom: '24px' }}>
+        <div style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.3em', textAlign: 'center', marginBottom: '24px' }}>
           十四主星
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -71,7 +71,7 @@ export default function KnowledgeHomePage() {
               }}
               className="hover:shadow-md hover:border-amber-400"
             >
-              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em' }}>
+              <div style={{ fontSize: 'calc(18px * var(--fs))', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em' }}>
                 {toTraditionalDisplayText(star)}
               </div>
             </Link>
@@ -88,14 +88,14 @@ export default function KnowledgeHomePage() {
               padding: '18px 22px',
             }}>
               <div className="flex items-baseline gap-3 mb-2">
-                <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
+                <span style={{ fontSize: 'calc(20px * var(--fs))', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.1em' }}>
                   {toTraditionalDisplayText(star)}星
                 </span>
-                <span style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.15em' }}>
+                <span style={{ fontSize: 'calc(11px * var(--fs))', color: 'var(--tx-3)', letterSpacing: '0.15em' }}>
                   ZI WEI · 14 STARS
                 </span>
               </div>
-              <p style={{ fontSize: '12px', color: 'var(--tx-2)', lineHeight: 1.7, marginBottom: '12px' }}>
+              <p style={{ fontSize: 'calc(12px * var(--fs))', color: 'var(--tx-2)', lineHeight: 1.7, marginBottom: '12px' }}>
                 {toTraditionalDisplayText(STAR_DESCRIPTIONS_QUICK[star] || '')}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -107,7 +107,7 @@ export default function KnowledgeHomePage() {
                       key={t}
                       href={`/knowledge/${STAR_TO_SLUG[star]}/${t}`}
                       style={{
-                        fontSize: '11px',
+                        fontSize: 'calc(11px * var(--fs))',
                         padding: '4px 10px',
                         background: 'rgba(184,146,42,0.06)',
                         border: '1px solid rgba(184,146,42,0.15)',

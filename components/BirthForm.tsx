@@ -184,7 +184,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     color: inputClr,
     borderRadius: '14px',
     padding: '10px 14px',
-    fontSize: '13px',
+    fontSize: 'calc(13px * var(--fs))',
     width: '100%',
     outline: 'none',
     transition: 'border-color 0.2s',
@@ -201,7 +201,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.18 }}
-            style={{ color: errorClr, fontSize: '11px', marginTop: '4px' }}
+            style={{ color: errorClr, fontSize: 'calc(11px * var(--fs))', marginTop: '4px' }}
           >
             ✕ {msg}
           </motion.p>
@@ -221,7 +221,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
       style={{ background: bg, border: `1px solid ${border}`, borderRadius: '24px', padding: '28px', backdropFilter: 'blur(20px)' }}
     >
       {/* 標題 */}
-      <h3 style={{ color: goldText, fontSize: '12px', letterSpacing: '0.4em', textAlign: 'center', marginBottom: '20px', fontWeight: 500 }}>
+      <h3 style={{ color: goldText, fontSize: 'calc(12px * var(--fs))', letterSpacing: '0.4em', textAlign: 'center', marginBottom: '20px', fontWeight: 500 }}>
         ── 輸入生辰八字 ──
       </h3>
 
@@ -239,7 +239,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 姓名 ── */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>姓名（可選）</label>
+        <label style={{ display: 'block', fontSize: 'calc(11px * var(--fs))', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>姓名（可選）</label>
         <input
           type="text"
           placeholder="請輸入姓名"
@@ -253,7 +253,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 出生日期 ── */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生日期（公曆）</label>
+        <label style={{ display: 'block', fontSize: 'calc(11px * var(--fs))', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生日期（公曆）</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
           <div>
             <select
@@ -302,7 +302,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 出生地點 ── */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生地點（用於真太陽時校正）</label>
+        <label style={{ display: 'block', fontSize: 'calc(11px * var(--fs))', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生地點（用於真太陽時校正）</label>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <select
             value={form.province}
@@ -337,7 +337,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{ fontSize: '10px', color: isDark ? 'rgba(180,210,235,0.85)' : 'rgba(100,70,10,0.5)', marginTop: '5px' }}
+              style={{ fontSize: 'calc(10px * var(--fs))', color: isDark ? 'rgba(180,210,235,0.85)' : 'rgba(100,70,10,0.5)', marginTop: '5px' }}
             >
               {form.city ? toTraditionalDisplayText(form.city) : '（請選擇城市）'} · 經度 {form.longitude.toFixed(1)}°E · 時差 {offsetMin > 0 ? '+' : ''}{offsetMin} 分鐘
             </motion.p>
@@ -347,7 +347,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{ fontSize: '10px', color: isDark ? 'rgba(165,185,210,0.7)' : 'rgba(140,100,20,0.45)', marginTop: '5px' }}
+              style={{ fontSize: 'calc(10px * var(--fs))', color: isDark ? 'rgba(165,185,210,0.7)' : 'rgba(140,100,20,0.45)', marginTop: '5px' }}
             >
               * 倪海廈批命用真太陽時，建議填寫出生地以自動校正時辰
             </motion.p>
@@ -357,7 +357,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 出生時間 ── */}
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生時間（北京時間）</label>
+        <label style={{ display: 'block', fontSize: 'calc(11px * var(--fs))', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>出生時間（北京時間）</label>
         <div style={{ borderRadius: '14px', padding: '12px', background: panelBg, border: `1px solid ${panelBorder}`, opacity: form.unknownTime ? 0.45 : 1, pointerEvents: form.unknownTime ? 'none' : 'auto', transition: 'opacity 0.2s' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
             <select
@@ -381,12 +381,12 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
           </div>
           {/* 真太陽時結果 */}
           <div style={{ textAlign: 'center', padding: '4px 0' }}>
-            <span style={{ fontSize: '10px', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)' }}>真太陽時 → </span>
-            <span style={{ fontSize: '15px', color: goldText, fontWeight: 600, letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: 'calc(10px * var(--fs))', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)' }}>真太陽時 → </span>
+            <span style={{ fontSize: 'calc(15px * var(--fs))', color: goldText, fontWeight: 600, letterSpacing: '0.08em' }}>
               {SHICHEN_NAMES[branch]}時
             </span>
             {shichenInfo && (
-              <span style={{ fontSize: '10px', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)', marginLeft: '4px' }}>
+              <span style={{ fontSize: 'calc(10px * var(--fs))', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)', marginLeft: '4px' }}>
                 （{shichenInfo.range}）
               </span>
             )}
@@ -399,7 +399,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             onChange={e => setForm({ ...form, unknownTime: e.target.checked })}
             style={{ width: '14px', height: '14px', borderRadius: '4px', cursor: 'pointer' }}
           />
-          <span style={{ fontSize: '10px', color: isDark ? 'rgba(165,185,210,0.7)' : 'rgba(140,100,20,0.45)' }}>
+          <span style={{ fontSize: 'calc(10px * var(--fs))', color: isDark ? 'rgba(165,185,210,0.7)' : 'rgba(140,100,20,0.45)' }}>
             不知道出生時間，以子時（23:00–01:00）起盤
           </span>
         </label>
@@ -407,7 +407,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
       {/* ── 性別 ── */}
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>性別</label>
+        <label style={{ display: 'block', fontSize: 'calc(11px * var(--fs))', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>性別</label>
         <div style={{ display: 'flex', gap: '10px' }}>
           {(['male', 'female'] as const).map(g => {
             const active = form.gender === g;
@@ -423,7 +423,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
                   flex: 1,
                   padding: '11px',
                   borderRadius: '14px',
-                  fontSize: '13px',
+                  fontSize: 'calc(13px * var(--fs))',
                   fontWeight: 500,
                   border: `1px solid ${active ? `rgba(${accent},0.6)` : inputBorder}`,
                   background: active ? `rgba(${accent},0.08)` : inputBg,
@@ -458,8 +458,8 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               alignItems: 'center',
               gap: '8px',
             }}>
-              <span style={{ fontSize: '12px', color: summaryClr }}>✓</span>
-              <span style={{ fontSize: '11px', color: summaryClr, letterSpacing: '0.03em', flex: 1 }}>
+              <span style={{ fontSize: 'calc(12px * var(--fs))', color: summaryClr }}>✓</span>
+              <span style={{ fontSize: 'calc(11px * var(--fs))', color: summaryClr, letterSpacing: '0.03em', flex: 1 }}>
                 {summaryText}
               </span>
             </div>
@@ -477,7 +477,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
           width: '100%',
           padding: '14px',
           borderRadius: '16px',
-          fontSize: '13px',
+          fontSize: 'calc(13px * var(--fs))',
           fontWeight: 600,
           letterSpacing: '0.15em',
           border: 'none',

@@ -26,8 +26,8 @@ export default function ChartPage() {
     return (
       <main style={{ maxWidth: 720, margin: '0 auto', padding: '48px 20px' }}>
         <BackHomeLink className="back-home-link--spaced" />
-        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>紫微斗數排盤</h1>
-        <p style={{ color: '#888', marginBottom: 32, fontSize: 14, lineHeight: 1.7 }}>
+        <h1 style={{ fontSize: 'calc(28px * var(--fs))', fontWeight: 700, marginBottom: 8 }}>紫微斗數排盤</h1>
+        <p style={{ color: '#888', marginBottom: 32, fontSize: 'calc(14px * var(--fs))', lineHeight: 1.7 }}>
           輸入出生年月日時，開源排盤引擎即時生成命盤。
           <br />
           （本頁為引擎 Demo，完整商業版介面不在開源範圍；排盤核心完全開放。）
@@ -43,12 +43,12 @@ export default function ChartPage() {
               color: '#d4a843',
               background: 'rgba(200, 153, 58, 0.08)',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 'calc(13px * var(--fs))',
             }}
           >
             用示例資料快速檢視完整命盤
           </button>
-          <p style={{ color: '#888', fontSize: 12, margin: '8px 0 0' }}>
+          <p style={{ color: '#888', fontSize: 'calc(12px * var(--fs))', margin: '8px 0 0' }}>
             使用虛構示例：1990-01-01，辰時，男；姓名與出生地留空。
           </p>
         </div>

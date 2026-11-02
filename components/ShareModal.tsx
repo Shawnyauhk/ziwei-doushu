@@ -81,13 +81,13 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               borderBottom: '1px solid rgba(184,146,42,0.15)',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#3d2f10', letterSpacing: '0.12em' }}>
+              <div style={{ fontSize: 'calc(14px * var(--fs))', fontWeight: 600, color: '#3d2f10', letterSpacing: '0.12em' }}>
                 ✦ 分享命盤
               </div>
               <button onClick={onClose}
                 style={{
                   width: '28px', height: '28px', borderRadius: '50%', border: 'none',
-                  background: 'rgba(0,0,0,0.05)', color: '#666', fontSize: '16px',
+                  background: 'rgba(0,0,0,0.05)', color: '#666', fontSize: 'calc(16px * var(--fs))',
                   cursor: 'pointer', lineHeight: 1,
                 }}
               >×</button>
@@ -100,7 +100,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               )}
             </div>
 
-            <div style={{ padding: '0 20px 12px', textAlign: 'center', fontSize: '11px', color: '#a89b7c', letterSpacing: '0.05em' }}>
+            <div style={{ padding: '0 20px 12px', textAlign: 'center', fontSize: 'calc(11px * var(--fs))', color: '#a89b7c', letterSpacing: '0.05em' }}>
               ↑ 朋友圈 / 微信 / 抖音 / 小紅書 都能用
             </div>
 
@@ -110,7 +110,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
                 style={{
                   padding: '14px', borderRadius: '10px', border: 'none',
                   background: 'linear-gradient(135deg, #d4a948 0%, #b8922a 100%)',
-                  color: 'white', fontSize: '14px', fontWeight: 600, letterSpacing: '0.15em',
+                  color: 'white', fontSize: 'calc(14px * var(--fs))', fontWeight: 600, letterSpacing: '0.15em',
                   cursor: downloading ? 'not-allowed' : 'pointer',
                   boxShadow: '0 4px 12px rgba(184,146,42,0.3)',
                   opacity: downloading ? 0.7 : 1,
@@ -123,7 +123,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
                 style={{
                   padding: '14px', borderRadius: '10px',
                   border: '1px solid rgba(184,146,42,0.4)', background: 'white',
-                  color: '#b8922a', fontSize: '14px', fontWeight: 500, letterSpacing: '0.12em',
+                  color: '#b8922a', fontSize: 'calc(14px * var(--fs))', fontWeight: 500, letterSpacing: '0.12em',
                   cursor: 'pointer',
                 }}
               >
@@ -131,7 +131,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               </button>
 
               <div style={{
-                fontSize: '11px', color: '#a89b7c', lineHeight: 1.7,
+                fontSize: 'calc(11px * var(--fs))', color: '#a89b7c', lineHeight: 1.7,
                 padding: '10px 12px', background: 'rgba(184,146,42,0.05)',
                 borderRadius: '8px', marginTop: '4px',
               }}>

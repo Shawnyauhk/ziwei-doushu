@@ -42,7 +42,7 @@ export default function LibrarySearch() {
           padding: '10px 14px',
           border: 'none',
           outline: 'none',
-          fontSize: '14px',
+          fontSize: 'calc(14px * var(--fs))',
           color: 'var(--tx-0)',
           background: 'transparent',
         }}
@@ -56,7 +56,7 @@ export default function LibrarySearch() {
           border: 'none',
           background: 'linear-gradient(135deg, #d4a948 0%, #b8922a 100%)',
           color: 'white',
-          fontSize: '13px',
+          fontSize: 'calc(13px * var(--fs))',
           fontWeight: 600,
           letterSpacing: '0.15em',
           cursor: q.trim() ? 'pointer' : 'not-allowed',

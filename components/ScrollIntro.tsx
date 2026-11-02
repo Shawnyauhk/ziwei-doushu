@@ -300,7 +300,7 @@ export default function ScrollIntro({ onComplete, onSkip, skipLabel = '跳 過' 
               color: 'rgba(232,220,196,0.55)',
               border: '1px solid rgba(232,220,196,0.18)',
               borderRadius: '4px',
-              fontSize: '12px',
+              fontSize: 'calc(12px * var(--fs))',
               cursor: 'pointer',
               fontFamily: '"STSong", serif',
               letterSpacing: '0.25em',

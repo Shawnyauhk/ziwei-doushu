@@ -40,7 +40,7 @@ const TOPIC_PROMPTS: Record<string, string> = {
 用一句話概括這個命盤的核心格局與命主氣質。
 
 **【主星解讀】**
-命宮主星的核心特質，引用倪海廈原話或觀點。
+命宮主星的核心特質，以倪海廈體系常用觀點說明（不可編造原話）。
 
 **【三方四正】**
 財、官、遷三宮的聯動分析及整體格局。
@@ -319,7 +319,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
 ${displayPalaceName}在命盤中的意義，以及這種星曜配置的整體判斷。
 
 **【主星解讀】**
-主星在此宮的倪海廈體系解讀，引用具體觀點。
+主星在此宮的倪海廈體系解讀，以體系常用觀點說明。
 
 **【三方四正聯動】**
 三方四正宮位對此宮的影響。
@@ -353,7 +353,7 @@ ${displayPalaceName}在命盤中的意義，以及這種星曜配置的整體判
 化${displaySiHua}在倪海廈體系中的核心含義，以及${displayStarName}化${displaySiHua}的特殊含義。
 
 **【落宮影響】**
-${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主管的領域受到何種影響，倪師如何解讀。
+${displayStarName}化${displaySiHua}落在【${displayPalaceName}】，該宮主管的領域受到何種影響，以體系觀點說明。
 
 **【三方四正飛化路徑】**
 化${displaySiHua}入${displayPalaceName}後，對其三方四正（對宮、兩個三合宮）的聯動影響。

@@ -490,3 +490,43 @@ body {
   .chart-result-layout { gap: 12px; margin-top: 12px; }
   .chart-result-layout > :last-child { min-height: 420px; }
 }
+
+/* ─── 字體放大：只縮放文字，不改間距與容器尺寸，避免影響排版 ─── */
+:root { --fs: 1; }
+/* 分享卡是固定尺寸的海報輸出，不跟隨字體放大，避免文字溢出卡片 */
+#share-card { --fs: 1 !important; }
+html[data-fontscale="large"]  { --fs: 1.12; }
+html[data-fontscale="xlarge"] { --fs: 1.24; }
+
+/* Tailwind 任意 px 字級（全站僅這 7 種） */
+html .text-\[7px\]  { font-size: calc(7px  * var(--fs)); }
+html .text-\[8px\]  { font-size: calc(8px  * var(--fs)); }
+html .text-\[9px\]  { font-size: calc(9px  * var(--fs)); }
+html .text-\[10px\] { font-size: calc(10px * var(--fs)); }
+html .text-\[11px\] { font-size: calc(11px * var(--fs)); }
+html .text-\[12px\] { font-size: calc(12px * var(--fs)); }
+html .text-\[13px\] { font-size: calc(13px * var(--fs)); }
+
+/* Tailwind 命名字級：line-height 同步縮放，避免行距過窄造成重疊 */
+html .text-xs   { font-size: calc(0.75rem  * var(--fs)); line-height: calc(1rem    * var(--fs)); }
+html .text-sm   { font-size: calc(0.875rem * var(--fs)); line-height: calc(1.25rem * var(--fs)); }
+html .text-base { font-size: calc(1rem     * var(--fs)); line-height: calc(1.5rem  * var(--fs)); }
+html .text-lg   { font-size: calc(1.125rem * var(--fs)); line-height: calc(1.75rem * var(--fs)); }
+html .text-xl   { font-size: calc(1.25rem  * var(--fs)); line-height: calc(1.75rem * var(--fs)); }
+html .text-2xl  { font-size: calc(1.5rem   * var(--fs)); line-height: calc(2rem    * var(--fs)); }
+html .text-3xl  { font-size: calc(1.875rem * var(--fs)); line-height: calc(2.25rem * var(--fs)); }
+
+/* 響應式變體放在基礎規則之後，才能在斷點正確覆蓋 */
+@media (min-width: 640px) {
+  html .sm\:text-xs { font-size: calc(0.75rem * var(--fs)); line-height: calc(1rem * var(--fs)); }
+}
+@media (min-width: 768px) {
+  html .md\:text-sm { font-size: calc(0.875rem * var(--fs)); line-height: calc(1.25rem * var(--fs)); }
+  html .md\:text-lg { font-size: calc(1.125rem * var(--fs)); line-height: calc(1.75rem * var(--fs)); }
+}
+@media (min-width: 1024px) {
+  html .lg\:text-xs  { font-size: calc(0.75rem  * var(--fs)); line-height: calc(1rem    * var(--fs)); }
+  html .lg\:text-sm  { font-size: calc(0.875rem * var(--fs)); line-height: calc(1.25rem * var(--fs)); }
+  html .lg\:text-xl  { font-size: calc(1.25rem  * var(--fs)); line-height: calc(1.75rem * var(--fs)); }
+  html .lg\:text-3xl { font-size: calc(1.875rem * var(--fs)); line-height: calc(2.25rem * var(--fs)); }
+}

@@ -26,7 +26,7 @@ export default function FamousPersonCard({ person }: { person: FamousPerson }) {
       }}
     >
       <div className="text-[10px] tracking-widest mb-3 flex items-center gap-2" style={{ color: 'var(--t-faint)' }}>
-        <span style={{ color: catColor, opacity: 0.9, fontSize: '12px' }}>★</span>
+        <span style={{ color: catColor, opacity: 0.9, fontSize: 'calc(12px * var(--fs))' }}>★</span>
         名人命盤
         <span className="text-[9px] px-2 py-0.5 rounded-full ml-auto"
           style={{ color: catColor, background: catColor + '18', border: `1px solid ${catColor}40` }}>

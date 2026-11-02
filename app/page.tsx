@@ -933,7 +933,7 @@ export default function HomePage() {
                   倪師的講課影片在 B 站、YouTube 與各大平臺廣泛流傳，是新一代命理與中醫愛好者公認的入門必修。
                   他不僅是紫微斗數的傳承者，更是把傳統命理與中醫帶入現代知識體系的關鍵人物之一。
                 </p>
-                <p style={{ fontSize: '11px', color: c.textMuted, fontStyle: 'italic', marginTop: '12px' }}>
+                <p style={{ fontSize: 'calc(11px * var(--fs))', color: c.textMuted, fontStyle: 'italic', marginTop: '12px' }}>
                   本平臺所有解讀基於倪師《天紀》公開教學講義、《紫微斗數全書》明版、傳統三合派古籍整理而成，
                   僅作文化與個人成長參考。倪師本人與本平臺無任何商業關聯。
                 </p>
@@ -988,7 +988,7 @@ export default function HomePage() {
               <div className="flex justify-center gap-3 flex-wrap mb-6">
                 {['感情匹配度分析', '合夥創業評估', '親子緣分解讀', '婚前相性評估'].map(item => (
                   <span key={item} style={{
-                    fontSize: '12px', padding: '5px 14px', borderRadius: '20px',
+                    fontSize: 'calc(12px * var(--fs))', padding: '5px 14px', borderRadius: '20px',
                     background: theme === 'dark' ? 'rgba(212,168,67,0.08)' : 'rgba(212,168,67,0.12)',
                     border: `1px solid ${c.goldLine}`,
                     color: c.goldSolid,

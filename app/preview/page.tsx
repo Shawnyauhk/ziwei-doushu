@@ -7,7 +7,7 @@ const linkStyle = {
   minHeight: 48,
   padding: '0 24px',
   borderRadius: 10,
-  fontSize: 15,
+  fontSize: 'calc(15px * var(--fs))',
   fontWeight: 600,
   textDecoration: 'none',
 };
@@ -36,13 +36,13 @@ export default function PreviewPage() {
           textAlign: 'center',
         }}
       >
-        <p style={{ margin: '0 0 14px', color: '#c8993a', fontSize: 12, letterSpacing: '0.28em' }}>
+        <p style={{ margin: '0 0 14px', color: '#c8993a', fontSize: 'calc(12px * var(--fs))', letterSpacing: '0.28em' }}>
           PREVIEW
         </p>
         <h1 style={{ margin: 0, fontSize: 'clamp(28px, 6vw, 40px)', letterSpacing: '0.12em' }}>
           紫微命盤
         </h1>
-        <p style={{ margin: '16px 0 30px', color: '#aab4c5', fontSize: 15, lineHeight: 1.8 }}>
+        <p style={{ margin: '16px 0 30px', color: '#aab4c5', fontSize: 'calc(15px * var(--fs))', lineHeight: 1.8 }}>
           開場動畫已移除。選擇下方連結即可直接瀏覽網站或開始排盤。
         </p>
         <nav aria-label="Preview 導覽" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12 }}>
