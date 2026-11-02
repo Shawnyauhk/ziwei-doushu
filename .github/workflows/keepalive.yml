@@ -1,0 +1,35 @@
+name: Keep Render Alive
+
+# Render 免費實例閒置 15 分鐘會休眠；這裡每 5 分鐘打一次，把實例保持喚醒。
+on:
+  schedule:
+    # GitHub 的 cron 最小間隔為 5 分鐘，且排程可能延遲數分鐘，
+    # 因此用 5 分鐘（而非 10 分鐘）以確保兩次請求間隔不超過 15 分鐘。
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # 可在 Actions 頁面手動觸發，方便驗證
+
+# 同一時間只跑一個，避免排程延遲堆積
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping service
+        env:
+          TARGET: https://ziwei-master-1s8p.onrender.com/
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 --retry 0 "$TARGET" || echo "000")
+            echo "attempt ${attempt}: HTTP ${code}"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "keepalive failed after 3 attempts"
+          exit 1
