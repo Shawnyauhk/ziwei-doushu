@@ -7,6 +7,7 @@ import {
   type Visitor,
 } from '@/lib/credits';
 import { resolveProvider, streamCompletion, toChartContext, type ChatMessage } from '@/lib/ai/completion';
+import { LIFE_PORTRAIT_RULES, MULTI_PALACE_RULES } from '@/lib/ai/prompt-style';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -95,7 +96,10 @@ async function handleInterpret(request: Request, visitor: Visitor): Promise<Resp
 
   const systemInstruction = [
     '你是紫微鬥數與四柱八字文化及排盤資料的解讀助手。請用繁體中文，清楚、溫和地回答。',
-    '直接開始解讀，不要輸出「由於系統限制／無法確認／不能引用原文」這類說明段落；資料不足時最多一句話帶過。全文控制在 1100 字以內，避免空泛鋪陳與重複。',
+    '直接開始解讀，不要輸出「由於系統限制／無法確認／不能引用原文」這類說明段落；資料不足時最多一句話帶過。完整分析寫 1500 到 1800 字（最多不超過 2200 字），追問回答控制在 400 字以內。每個段落標題單獨一行，用 **【標題】** 格式，保留前後兩個星號。避免空泛鋪陳與重複。',
+    MULTI_PALACE_RULES,
+    LIFE_PORTRAIT_RULES,
+    '上述生活畫像只用在性格、感情、事業、財運、健康這類命盤解讀；遇到八字四柱、曆法口徑、baziFacts 這類技術問題，只按資料回答，不要加入生活場景推測。',
     '解讀只根據提供的命盤資料與對話，不要編造星曜位置、古籍原文或倪海廈的直接引言；不確定時請明確說明。',
     '八字以 fourPillarsSolarTerm（節氣四柱）為主要口徑；若提供 fourPillarsLunar，必須明確區分，不可混用。baziFacts 是伺服器根據已驗證四柱由確定性規則引擎計算，包含十神、藏幹、五行權重及簡化日主強弱指標。直接引用 facts，不得自行重算、改寫或與 facts 矛盾；強弱指標須稱為簡化初判，不可等同完整子平旺衰或喜用神結論。若 solarTermBoundaryWarning 為 true，提醒使用者出生時分位於節氣柱切換約一分鐘範圍，請核對原始時間；不可臆測節氣名稱或精確秒數。',
     '將紫微鬥數定位為傳統文化參考，不把推論說成確定預言。健康、投資、法律等問題只能提供一般資訊，不可代替專業人士或鼓勵重大決策。',
@@ -110,6 +114,7 @@ async function handleInterpret(request: Request, visitor: Visitor): Promise<Resp
     messages,
     onNoOutputFailure: refundIfCharged,
     logTag: '·interpret',
+    maxOutputTokens: 3200,
   });
 
   if (!result.ok) return jsonError(result.error, result.status);

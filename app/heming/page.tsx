@@ -368,6 +368,27 @@ export default function HemingPage() {
 
           {analysis && <AiContent text={analysis} streaming={analyzing} />}
 
+          {/* 重新合盤：整盤重算（清空先前追問，沿用已起好的兩張命盤） */}
+          {analysis && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+              <button
+                onClick={() => { setQuestion(''); runAnalysis(); }}
+                disabled={analyzing}
+                style={{
+                  padding: '8px 18px', borderRadius: 'var(--r-pill)',
+                  border: '1px solid var(--ac-bdr)', background: 'var(--ac-bg)',
+                  color: analyzing ? 'var(--tx-3)' : 'var(--ac)',
+                  fontSize: 'calc(12px * var(--fs))', fontWeight: 500,
+                  cursor: analyzing ? 'not-allowed' : 'pointer',
+                  opacity: analyzing ? 0.6 : 1,
+                  transition: 'opacity 0.15s',
+                }}
+              >
+                {analyzing ? '分析中…' : '重新合盤'}
+              </button>
+            </div>
+          )}
+
           {analysisError && (
             <div style={{ padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--bdr)', background: 'var(--bg-card)', fontSize: 'calc(13px * var(--fs))', color: 'var(--tx-2)', marginTop: '12px' }}>
               {apiMissing
@@ -432,7 +453,7 @@ export default function HemingPage() {
                 style={{
                   padding: '10px 20px', borderRadius: 'var(--r-sm)', border: 'none',
                   background: analyzing ? 'var(--bg-2)' : 'var(--tx-0)',
-                  color: analyzing ? 'var(--tx-3)' : 'white',
+                  color: analyzing ? 'var(--tx-3)' : 'var(--bg-0)',
                   fontSize: 'calc(13px * var(--fs))', fontWeight: 500,
                   cursor: analyzing ? 'not-allowed' : 'pointer',
                   transition: 'all 0.15s', whiteSpace: 'nowrap',

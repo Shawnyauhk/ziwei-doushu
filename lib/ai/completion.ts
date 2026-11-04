@@ -70,9 +70,19 @@ export function resolveProvider(): ProviderConfig {
 }
 
 /** 輸出長度上限：縮短可明顯減少尾段等待；可用 AI_MAX_TOKENS 覆寫。 */
-export function resolveMaxOutputTokens(): number {
-  const raw = Number(process.env.AI_MAX_TOKENS ?? 1400);
-  return Number.isFinite(raw) ? Math.min(Math.max(Math.round(raw), 400), 4000) : 1400;
+const DEFAULT_MAX_OUTPUT_TOKENS = 1400;
+const MIN_MAX_OUTPUT_TOKENS = 400;
+const MAX_MAX_OUTPUT_TOKENS = 4000;
+
+/**
+ * 解析本次請求的輸出上限。
+ * 呼叫方傳入 override 時優先使用（完整分析需要 1500-1800 字），
+ * 其餘呼叫仍走 AI_MAX_TOKENS 或預設值；所有來源都夾在 400-4000。
+ */
+export function resolveMaxOutputTokens(override?: number): number {
+  const source = override ?? Number(process.env.AI_MAX_TOKENS ?? DEFAULT_MAX_OUTPUT_TOKENS);
+  if (!Number.isFinite(source)) return DEFAULT_MAX_OUTPUT_TOKENS;
+  return Math.min(Math.max(Math.round(source), MIN_MAX_OUTPUT_TOKENS), MAX_MAX_OUTPUT_TOKENS);
 }
 
 function sanitizeFourPillars(value: unknown): [string, string, string, string] | undefined {
@@ -196,6 +206,8 @@ export interface StreamCompletionOptions {
   onNoOutputFailure?: () => Promise<void> | void;
   /** 額外標籤，僅用於日誌。 */
   logTag?: string;
+  /** 本次請求覆蓋 AI_MAX_TOKENS（完整分析用），夾取 400-4000。 */
+  maxOutputTokens?: number;
 }
 
 export type StreamCompletionResult =
@@ -203,10 +215,10 @@ export type StreamCompletionResult =
   | { ok: false; status: number; error: string };
 
 export async function streamCompletion(options: StreamCompletionOptions): Promise<StreamCompletionResult> {
-  const { request, config, systemInstruction, messages, onNoOutputFailure, logTag = '' } = options;
+  const { request, config, systemInstruction, messages, onNoOutputFailure, logTag = '', maxOutputTokens } = options;
   const { provider, apiKey, model, providerName } = config;
 
-  const MAX_OUTPUT_TOKENS = resolveMaxOutputTokens();
+  const MAX_OUTPUT_TOKENS = resolveMaxOutputTokens(maxOutputTokens);
   // Qwen3 系列預設可能開啟 thinking，會先產生大量推理內容才輸出正文（首字延遲 10-30 秒）。
   // 可用 MODELSCOPE_ENABLE_THINKING=true 還原；若上游不支援該參數會自動重試一次。
   const modelscopeDisableThinking = process.env.MODELSCOPE_ENABLE_THINKING !== 'true';
